@@ -1,46 +1,62 @@
-$Search_Folder = 'target'
+$Search_Folder = 'Tests'
 
-$Search_Patterns = 'belarus'
-$Search_DeniedFileExt = ('.pdb', '.swf')
-$Search_ExcludeFiles = ("*.png", "*.gif", "*.dll")
+$Search_RegExPatterns = 'invalid'
+$Search_DeniedFilesExtensions = ('invalid')
+$Search_ExcludeFiles = ("*.exe", "*.dll")
 
-$Result = @{}
+#
+# Filling files array
+$Files = @()
+Get-ChildItem $Search_Folder -Force -Recurse -Exclude $Search_ExcludeFiles | ?{ !$_.PSIsContainer } | ForEach-Object {
+	$Files += $_.FullName
+}
 
-if ($Search_Patterns) { $Search_Patterns = $Search_Patterns.Split(",") }
-if ($Search_DeniedFilePattrns) { $Search_DeniedFilePattrns = $Search_DeniedFilePattrns.Split(",") }
-
-Get-ChildItem $Search_Folder -Force -Recurse -File -Exclude $Search_ExcludeFiles | ForEach-Object {
-	$FullName = $_.FullName;
-	$Ext = [System.IO.Path]::GetExtension($FullName);
-	$Content = Get-Content -Path $FullName;
-	
-	$Search_DeniedFileExt | ForEach {
-		if ($Ext -eq $_)
-		{
-			echo ''
-			echo (' ! ' + $FullName + ' - *' + $_)
+#
+# Checking files extensions
+$ExtensionsResult = @{}
+if ($Search_DeniedFilesExtensions)
+{
+	$Search_DeniedFilesExtensions.Split(",") | ForEach-Object {
+		$token = $_.Trim()
+		$tokenRegEx = ('\.' + $_.Trim() + '$')
+		
+		$Files | ForEach-Object {
+			if ($_ -match $tokenRegEx) {
+				$ExtensionsResult[$token] += ($_ + ',')
+			}
 		}
 	}
-	
-	$Search_Patterns | ForEach {
-		$token = "$_".Trim()
+}
+
+#
+# Checking files names
+$NamesResult = @{}
+if ($Search_RegExPatterns)
+{
+	$Search_RegExPatterns.Split(",") | ForEach-Object {
+		$token = $_.Trim()
 		
-		if ($FullName -match $token)
-		{
-			echo ''
-			echo (' ! ' + $FullName + ' - ' + $token)
-		}
-		
-		if ($Content -match $token)
-		{
-			if (!$Result[$FullName])
-			{
-				$Result[$FullName] += $token
-				echo ''
-				echo (' ! ' + $FullName)
+		$Files | ForEach-Object {
+			if ($_ -match $token) {
+				$NamesResult[$token] += ($_ + ',')
 			}
-			
-			echo (' - ' + $token)
+		}
+	}
+}
+
+#
+# Checking files content
+$ContentResult = @{}
+if ($Search_RegExPatterns)
+{
+	$Search_RegExPatterns.Split(",") | ForEach-Object {
+		$token = $_.Trim()
+		
+		$Files | ForEach-Object {
+			$content = Get-Content -Path $_
+			if ($content -match $token) {
+				$ContentResult[$token] += ($_ + ',')
+			}
 		}
 	}
 }
