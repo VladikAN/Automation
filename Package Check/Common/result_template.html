@@ -1,37 +1,73 @@
 <html>
 	<head>
+		<style type="text/css">
+			h1, h2 { text-decoration: none; color: #777; font-family: Raleway, Helvetica, sans-serif; }
+			h1 { font-size: 30px; }
+			h2 { font-size: 20px; }
+			h3 { font-size: 16px; }
+			
+			.clear { clear:both; }
+			
+			body { background-color: #e2e2e2; }
+			
+			#content {
+				background-color: #fff;
+				box-shadow: 0 0 14px 1px rgba(0,0,0,0.2);
+				border: 1px solid #777;
+				border-radius: 15px;
+				width: 1024px;
+				margin: 0 auto;
+				padding: 0 20px 20px 20px;
+			}
+			
+			#extensions div, #contents div {
+				border: 1px solid #777;
+				border-radius: 5px;
+				float: left;
+				margin-right: 10px;
+				padding: 2px 5px;
+			}
+			
+			ul { list-style-type:none; padding: 0; }
+			ul li { border: 1px solid #aaa; border-radius: 3px; margin: 5px 0; padding: 5px; }
+		</style>
 	</head>
+	
 	<body>
-		<div>
-			<h1>File extensions check result</h1>
-			
-			<h2>Denied Extensions</h2>
+		<div id='content'>
 			<div>
-				%FileExtension%
+				<h1>File extensions check result</h1>
+				
+				<h2>Denied Extensions</h2>
+				<div id="extensions">
+					%FileExtension%
+				</div>
+				<div class="clear"></div>
+				
+				<h2>Extensions Results</h2>
+				<div>
+					%FileExtensionResults%
+				</div>
 			</div>
 			
-			<h2>Extensions Results</h2>
 			<div>
-				%FileExtensionResults%
-			</div>
-		</div>
-		
-		<div>
-			<h1>File name & content check result</h1>
-		
-			<h2>Denied Content</h2>
-			<div>
-				%DeniedContent%
-			</div>
+				<h1>File name & content check result</h1>
 			
-			<h2>Denied Names Results</h2>
-			<div>
-				%FileNameResult%
-			</div>
-			
-			<h2>Denied Content Results</h2>
-			<div>
-				%FileContentResult%
+				<h2>Denied Content</h2>
+				<div id="contents">
+					%DeniedContent%
+				</div>
+				<div class="clear"></div>
+				
+				<h2>Denied Names Results</h2>
+				<div>
+					%FileNameResult%
+				</div>
+				
+				<h2>Denied Content Results</h2>
+				<div>
+					%FileContentResult%
+				</div>
 			</div>
 		</div>
 	</body>

@@ -1,7 +1,7 @@
 $Search_Folder = 'Tests'
 
 $Search_RegExPatterns = 'invalid'
-$Search_DeniedFilesExtensions = ('invalid')
+$Search_DeniedFilesExtensions = ('invalid', 'doc', 'xls')
 $Search_ExcludeFiles = ("*.exe", "*.dll")
 
 $Result_Template = ((Split-Path $MyInvocation.MyCommand.Path) + '\Common\result_template.html')
@@ -19,7 +19,7 @@ Get-ChildItem $Search_Folder -Force -Recurse -Exclude $Search_ExcludeFiles | ?{ 
 $ExtensionsResult = @{}
 if ($Search_DeniedFilesExtensions)
 {
-	$Search_DeniedFilesExtensions.Split(",") | ForEach-Object {
+	$Search_DeniedFilesExtensions | ForEach-Object {
 		$token = $_.Trim()
 		$tokenRegEx = ('\.' + $_.Trim() + '$')
 		
@@ -84,7 +84,7 @@ Copy-Item $Result_Template $Result_File
 if ($Search_DeniedFilesExtensions)
 {
 	$extensions = ''
-	$Search_DeniedFilesExtensions.Split(",") | ForEach-Object {
+	$Search_DeniedFilesExtensions | ForEach-Object {
 		$token = $_.Trim()
 		$extensions += ('<div>' + $token + '</div>')
 	}
@@ -147,7 +147,7 @@ if ($Search_RegExPatterns)
 			$key = $_.Key
 			$value = $_.Value
 			
-			$files += ('<div>' + $key + '</div>')
+			$files += ('<h3>' + $key + '</h3>')
 			$files += '<ul>'
 			$value.Split(",") | ForEach-Object {
 				$fileName = $_.Trim()
