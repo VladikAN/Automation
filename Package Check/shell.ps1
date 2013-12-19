@@ -1,8 +1,8 @@
 $Search_Folder = 'Tests'
 
-$Search_RegExPatterns = 'invalid'
+$Search_RegExPatterns = ('invalid', 'invalid')
 $Search_DeniedFilesExtensions = ('invalid', 'doc', 'xls')
-$Search_ExcludeFiles = ("*.exe", "*.dll")
+$Search_ExcludeFiles = ('*.exe', '*.dll', '*.gif', '*.png', '*.jpg', '*.jpeg', '*.nupkg')
 
 $Result_Template = ((Split-Path $MyInvocation.MyCommand.Path) + '\Common\result_template.html')
 $Result_File = ((Split-Path $MyInvocation.MyCommand.Path) + '\result.html')
@@ -15,20 +15,79 @@ Get-ChildItem $Search_Folder -Force -Recurse -Exclude $Search_ExcludeFiles | ?{ 
 }
 
 #
+# Preparing big patterns regex
+$BigRegExPatterns = '';
+$Search_RegExPatterns | ForEach-Object {
+	$token = $_.Trim()
+	if ($BigRegExPatterns) {
+		$BigRegExPatterns = ($BigRegExPatterns +'|(' + $token + ')')
+	} else {
+		$BigRegExPatterns = ('(' + $token + ')')
+	}
+}
+
+#
+# Preparing big files regex
+$BigRegExFiles = '';
+$Search_DeniedFilesExtensions | ForEach-Object {
+	$token = $_.Trim()
+	if ($BigRegExFiles) {
+		$BigRegExFiles = ($BigRegExFiles +'|(\.' + $token + ')$')
+	} else {
+		$BigRegExFiles = ('(\.' + $token + ')$')
+	}
+}
+
+#
+# Express files check
+Write-Host ''
+Write-Host 'Express file extensions check...'
+$Express_FileExtensions = @()
+$Files | ForEach-Object {
+	if ($_ -match $BigRegExFiles) {
+		$Express_FileExtensions += $_
+	}
+}
+Write-Host ($Express_FileExtensions.Length.ToString() + ' File(s)')
+
+Write-Host ''
+Write-Host 'Express file names check...'
+$Express_FileNames = @()
+$Files | ForEach-Object {
+	if ($_ -match $BigRegExPatterns) {
+		$Express_FileNames += $_
+	}
+}
+Write-Host ($Express_FileNames.Length.ToString() + ' File(s)')
+
+Write-Host ''
+Write-Host 'Express file content check...'
+$Express_FileContent = @()
+$Files | ForEach-Object {
+	$content = Get-Content -Path $_
+	if ($content -match $BigRegExPatterns) {
+		$Express_FileContent += $_
+	}
+}
+Write-Host ($Express_FileContent.Length.ToString() + ' File(s)')
+
+#
 # Checking files extensions
-$ExtensionsResult = @{}
-if ($Search_DeniedFilesExtensions)
+Write-Host ''
+Write-Host 'Full file extensions check...'
+$Result_FileExtensions = @{}
+if ($Express_FileExtensions)
 {
 	$Search_DeniedFilesExtensions | ForEach-Object {
 		$token = $_.Trim()
 		$tokenRegEx = ('\.' + $_.Trim() + '$')
 		
-		$Files | ForEach-Object {
+		$Express_FileExtensions | ForEach-Object {
 			if ($_ -match $tokenRegEx) {
-				if ($ExtensionsResult[$token]) {
-					$ExtensionsResult[$token] += (',' + $_)
+				if ($Result_FileExtensions[$token]) {
+					$Result_FileExtensions[$token] += (',' + $_)
 				} else {
-					$ExtensionsResult[$token] = $_
+					$Result_FileExtensions[$token] = $_
 				}
 			}
 		}
@@ -37,18 +96,20 @@ if ($Search_DeniedFilesExtensions)
 
 #
 # Checking files names
-$NamesResult = @{}
-if ($Search_RegExPatterns)
+Write-Host ''
+Write-Host 'Full file names check...'
+$Result_FileNames = @{}
+if ($Express_FileNames)
 {
-	$Search_RegExPatterns.Split(",") | ForEach-Object {
+	$Search_RegExPatterns | ForEach-Object {
 		$token = $_.Trim()
 		
-		$Files | ForEach-Object {
+		$Express_FileNames | ForEach-Object {
 			if ($_ -match $token) {
-				if ($NamesResult[$token]) {
-					$NamesResult[$token] += (',' + $_)
+				if ($Result_FileNames[$token]) {
+					$Result_FileNames[$token] += (',' + $_)
 				} else {
-					$NamesResult[$token] = $_
+					$Result_FileNames[$token] = $_
 				}
 			}
 		}
@@ -57,19 +118,21 @@ if ($Search_RegExPatterns)
 
 #
 # Checking files content
-$ContentResult = @{}
-if ($Search_RegExPatterns)
+Write-Host ''
+Write-Host 'Full file content check...'
+$Result_FileContent = @{}
+if ($Express_FileContent)
 {
-	$Search_RegExPatterns.Split(",") | ForEach-Object {
+	$Search_RegExPatterns | ForEach-Object {
 		$token = $_.Trim()
 		
-		$Files | ForEach-Object {
+		$Express_FileContent | ForEach-Object {
 			$content = Get-Content -Path $_
 			if ($content -match $token) {
-				if ($ContentResult[$token]) {
-					$ContentResult[$token] += (',' + $_)
+				if ($Result_FileContent[$token]) {
+					$Result_FileContent[$token] += (',' + $_)
 				} else {
-					$ContentResult[$token] = $_
+					$Result_FileContent[$token] = $_
 				}
 			}
 		}
@@ -92,19 +155,19 @@ if ($Search_DeniedFilesExtensions)
 	(Get-Content $Result_File) | ForEach-Object { $_ -replace "%FileExtension%", ($extensions) } | Set-Content $Result_File
 	
 	$files = 'Ok'
-	if ($ExtensionsResult)
+	if ($Result_FileExtensions)
 	{
-		$files = '<ul>'
-		$ExtensionsResult.GetEnumerator() | ForEach-Object {
+		$files = '<div class="result-list">'
+		$Result_FileExtensions.GetEnumerator() | ForEach-Object {
 			$key = $_.Key
 			$value = $_.Value
 			
 			$value.Split(",") | ForEach-Object {
 				$fileName = $_.Trim()
-				$files += ('<li>' + $fileName + '</li>')
+				$files += ('<div>' + $fileName + '</div>')
 			}
 		}
-		$files += '</ul>'
+		$files += '</div>'
 	}
 	
 	(Get-Content $Result_File) | ForEach-Object { $_ -replace "%FileExtensionResults%", ($files) } | Set-Content $Result_File
@@ -114,7 +177,7 @@ if ($Search_DeniedFilesExtensions)
 if ($Search_RegExPatterns)
 {
 	$names = ''
-	$Search_RegExPatterns.Split(",") | ForEach-Object {
+	$Search_RegExPatterns | ForEach-Object {
 		$token = $_.Trim()
 		$names += ('<div>' + $token + '</div>')
 	}
@@ -122,38 +185,38 @@ if ($Search_RegExPatterns)
 	(Get-Content $Result_File) | ForEach-Object { $_ -replace "%DeniedContent%", ($names) } | Set-Content $Result_File
 	
 	$files = 'Ok'
-	if ($NamesResult)
+	if ($Result_FileNames)
 	{
-		$files = '<ul>'
-		$NamesResult.GetEnumerator() | ForEach-Object {
+		$files = '<div class="result-list">'
+		$Result_FileNames.GetEnumerator() | ForEach-Object {
 			$key = $_.Key
 			$value = $_.Value
 			
 			$value.Split(",") | ForEach-Object {
 				$fileName = $_.Trim()
-				$files += ('<li>' + $fileName + '</li>')
+				$files += ('<div>' + $fileName + '</div>')
 			}
 		}
-		$files += '</ul>'
+		$files += '</div>'
 	}
 	
 	(Get-Content $Result_File) | ForEach-Object { $_ -replace "%FileNameResult%", ($files) } | Set-Content $Result_File
 	
 	$files = 'Ok'
-	if ($ContentResult)
+	if ($Result_FileContent)
 	{
 		$files = ''
-		$ContentResult.GetEnumerator() | ForEach-Object {
+		$Result_FileContent.GetEnumerator() | ForEach-Object {
 			$key = $_.Key
 			$value = $_.Value
 			
 			$files += ('<h3>' + $key + '</h3>')
-			$files += '<ul>'
+			$files += '<div class="result-list">'
 			$value.Split(",") | ForEach-Object {
 				$fileName = $_.Trim()
-				$files += ('<li>' + $fileName + '</li>')
+				$files += ('<div>' + $fileName + '</div>')
 			}
-			$files += '</ul>'
+			$files += '</div>'
 		}
 	}
 	

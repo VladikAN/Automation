@@ -28,8 +28,8 @@
 				padding: 2px 5px;
 			}
 			
-			ul { list-style-type:none; padding: 0; }
-			ul li { border: 1px solid #aaa; border-radius: 3px; margin: 5px 0; padding: 5px; }
+			div.result-list { padding: 0; }
+			div.result-list div { border: 1px solid #aaa; border-radius: 3px; margin: 5px 0; padding: 5px; }
 		</style>
 	</head>
 	
@@ -46,7 +46,7 @@
 				
 				<h2>Extensions Results</h2>
 				<div>
-					<ul><li>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file1.invalid</li><li>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file2.invalid</li><li>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file3.invalid</li></ul>
+					<div class="result-list"><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file1.invalid</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file2.invalid</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file3.invalid</div></div>
 				</div>
 			</div>
 			
@@ -55,18 +55,18 @@
 			
 				<h2>Denied Content</h2>
 				<div id="contents">
-					<div>invalid</div>
+					<div>invalid</div><div>invalid</div>
 				</div>
 				<div class="clear"></div>
 				
 				<h2>Denied Names Results</h2>
 				<div>
-					<ul><li>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file1.invalid</li><li>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file2.invalid</li><li>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file3.invalid</li></ul>
+					<div class="result-list"><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file1.invalid</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file2.invalid</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file3.invalid</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 6 Invalid Names\invalid.txt</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file1.invalid</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file2.invalid</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file3.invalid</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 6 Invalid Names\invalid.txt</div></div>
 				</div>
 				
 				<h2>Denied Content Results</h2>
 				<div>
-					<h3>invalid</h3><ul><li>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 0 Simple Files\file2.txt</li><li>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 0 Simple Files\file3.txt</li><li>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 1 Hidden Files\file2.txt</li><li>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 1 Hidden Files\file3.txt</li><li>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 2 Folders\Folder 1\Folder 3\file3.txt</li><li>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 2 Folders\Folder 2\file2.txt</li><li>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 3 No Extension\file2</li><li>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 3 No Extension\file3</li><li>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file2.invalid</li><li>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file3.invalid</li></ul>
+					<h3>invalid</h3><div class="result-list"><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 0 Simple Files\file2.txt</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 0 Simple Files\file3.txt</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 1 Hidden Files\file2.txt</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 1 Hidden Files\file3.txt</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 2 Folders\Folder 1\Folder 3\file3.txt</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 2 Folders\Folder 2\file2.txt</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 3 No Extension\file2</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 3 No Extension\file3</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file2.invalid</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file3.invalid</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 0 Simple Files\file2.txt</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 0 Simple Files\file3.txt</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 1 Hidden Files\file2.txt</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 1 Hidden Files\file3.txt</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 2 Folders\Folder 1\Folder 3\file3.txt</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 2 Folders\Folder 2\file2.txt</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 3 No Extension\file2</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 3 No Extension\file3</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file2.invalid</div><div>C:\Vlad\Github\Daily-Stuff\Package Check\Tests\Case 4 Invalid Extesion\file3.invalid</div></div>
 				</div>
 			</div>
 		</div>
