@@ -2,16 +2,21 @@ $Search_Folder = 'Tests'
 
 $Search_RegExPatterns = ('invalid', 'invalid')
 $Search_DeniedFilesExtensions = ('invalid', 'doc', 'xls')
-$Search_ExcludeFiles = ('*.exe', '*.dll', '*.gif', '*.png', '*.jpg', '*.jpeg', '*.nupkg')
+$Search_ExcludeFiles = ('\.exe$', '\.dll$', '\.gif$', '\.png$', '\.jpg$', '\.jpeg$', '\.nupkg$')
 
 $Result_Template = ((Split-Path $MyInvocation.MyCommand.Path) + '\Common\result_template.html')
 $Result_File = ((Split-Path $MyInvocation.MyCommand.Path) + '\result.html')
 
 #
-# Filling files array
-$Files = @()
-Get-ChildItem $Search_Folder -Force -Recurse -Exclude $Search_ExcludeFiles | ?{ !$_.PSIsContainer } | ForEach-Object {
-	$Files += $_.FullName
+# Preparing big exclude regex
+$BigExcludeRegEx = '';
+$Search_ExcludeFiles | ForEach-Object {
+	$token = $_.Trim()
+	if ($BigExcludeRegEx) {
+		$BigExcludeRegEx = ($BigExcludeRegEx +'|(' + $token + ')')
+	} else {
+		$BigExcludeRegEx = ('(' + $token + ')')
+	}
 }
 
 #
@@ -37,6 +42,17 @@ $Search_DeniedFilesExtensions | ForEach-Object {
 		$BigRegExFiles = ('(\.' + $token + ')$')
 	}
 }
+
+#
+# Filling files array
+$Files = @()
+Get-ChildItem $Search_Folder -Force -Recurse | ?{ !$_.PSIsContainer } | ForEach-Object {
+	if ($_.FullName -notmatch $BigExcludeRegEx) {
+		$Files += $_.FullName
+	}
+}
+Write-Host ''
+Write-Host ($Files.Length.ToString() + ' File(s) to check')
 
 #
 # Express files check
