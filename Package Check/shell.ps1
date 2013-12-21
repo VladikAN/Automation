@@ -1,7 +1,7 @@
 $Search_Folder = 'Tests'
 
 $Search_RegExPatterns = ('invalid', 'invalid')
-$Search_DeniedFilesExtensions = ('invalid', 'doc', 'xls')
+$Search_DeniedFiles = ('\.invalid$', '\.doc$', '\.xls$')
 $Search_ExcludeFiles = ('\.exe$', '\.dll$', '\.gif$', '\.png$', '\.jpg$', '\.jpeg$', '\.nupkg$')
 
 $Result_Template = ((Split-Path $MyInvocation.MyCommand.Path) + '\Common\result_template.html')
@@ -34,12 +34,12 @@ $Search_RegExPatterns | ForEach-Object {
 #
 # Preparing big files regex
 $BigRegExFiles = '';
-$Search_DeniedFilesExtensions | ForEach-Object {
+$Search_DeniedFiles | ForEach-Object {
 	$token = $_.Trim()
 	if ($BigRegExFiles) {
-		$BigRegExFiles = ($BigRegExFiles +'|(\.' + $token + ')$')
+		$BigRegExFiles = ($BigRegExFiles +'|(' + $token + ')')
 	} else {
-		$BigRegExFiles = ('(\.' + $token + ')$')
+		$BigRegExFiles = ('(' + $token + ')')
 	}
 }
 
@@ -94,12 +94,11 @@ Write-Host 'Full file extensions check...'
 $Result_FileExtensions = @{}
 if ($Express_FileExtensions)
 {
-	$Search_DeniedFilesExtensions | ForEach-Object {
+	$Search_DeniedFiles | ForEach-Object {
 		$token = $_.Trim()
-		$tokenRegEx = ('\.' + $_.Trim() + '$')
 		
 		$Express_FileExtensions | ForEach-Object {
-			if ($_ -match $tokenRegEx) {
+			if ($_ -match $token) {
 				if ($Result_FileExtensions[$token]) {
 					$Result_FileExtensions[$token] += (',' + $_)
 				} else {
@@ -160,10 +159,10 @@ if ($Express_FileContent)
 Copy-Item $Result_Template $Result_File
 
 # Printing files extensions
-if ($Search_DeniedFilesExtensions)
+if ($Search_DeniedFiles)
 {
 	$extensions = ''
-	$Search_DeniedFilesExtensions | ForEach-Object {
+	$Search_DeniedFiles | ForEach-Object {
 		$token = $_.Trim()
 		$extensions += ('<div>' + $token + '</div>')
 	}
