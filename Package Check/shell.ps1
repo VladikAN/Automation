@@ -230,12 +230,13 @@ if ($Result_FileContent)
 		$value = $_.Value
 		
 		$TargetFiles += ('<h3>' + $key + '</h3>')
-		$TargetFiles += '<div class="result-list">'
 		$value.Split(",") | ForEach-Object {
 			$fileName = $_.Trim()
-			$TargetFiles += ('<div>' + $fileName + '</div>')
+			
+			$TargetFiles += '<table class="result-list">'
+			$TargetFiles += ('<tr><th colspan="2">' + $fileName + '</th></tr>')
+			$TargetFiles += '</table>'
 		}
-		$TargetFiles += '</div>'
 	}
 }
 (Get-Content $Result_File) | ForEach-Object { $_ -replace "%FileContentResult%", ($TargetFiles) } | Set-Content $Result_File
