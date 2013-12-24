@@ -1,6 +1,6 @@
 $Search_Folder = 'Tests'
 
-$Search_ContentRegex = ('invalid', 'invalid')
+$Search_ContentRegex = ('invalid')
 $Search_FilesRegex = ('\.invalid$', '\.doc$', '\.xls$')
 $Search_ExcludeFiles = ('\.exe$', '\.dll$', '\.gif$', '\.png$', '\.jpg$', '\.jpeg$', '\.nupkg$')
 
@@ -10,9 +10,12 @@ $Result_File = ((Split-Path $MyInvocation.MyCommand.Path) + '\result.html')
 Add-Type -Language CSharp @"
 	public class PackageCheckResult
 	{
+		public string FileName;
+		public int[] LinesNumbers;
+		public string[] LinesContent;
+		public string[] LinesMatch;
 	}
 "@;
-$a = New-Object PackageCheckResult
 
 #
 # Preparing big patterns regex
@@ -56,7 +59,6 @@ $TargetFiles = @()
 Get-ChildItem $Search_Folder -Force -Recurse | ?{ !$_.PSIsContainer } | ForEach-Object {
 	if ($_.FullName -notmatch $Search_ExcludeFilesCommon) {
 		$TargetFiles += $_.FullName
-		Write-Host ($_.Name)
 	}
 }
 Write-Host ''
@@ -140,15 +142,19 @@ Write-Host 'Full file content check...'
 $Result_FileContent = @{}
 $Search_ContentRegex | ForEach-Object {
 	$token = $_.Trim()
-	
+	$Result_FileContent[$token] = @()
+
 	$Express_FileContent | ForEach-Object {
-		$content = Get-Content -Path $_
-		if ($content -match $token) {
-			if ($Result_FileContent[$token]) {
-				$Result_FileContent[$token] += (',' + $_)
-			} else {
-				$Result_FileContent[$token] = $_
-			}
+		$resultObj = New-Object PackageCheckResult
+		$resultObj.FileName = $_
+
+		$matches = Select-String $token $_ | Select LineNumber,Line | Foreach {
+			$resultObj.LinesNumbers += $_.LineNumber
+			$resultObj.LinesContent += $_.Line
+		}
+		
+		if ($matches.Length -ne 0) {
+			$Result_FileContent[$token] += $resultObj
 		}
 	}
 }
@@ -191,7 +197,7 @@ if ($Result_FileExtensions)
 
 # Printing files names
 $names = 'None'
-if ($Result_FileNames -or $Result_FileContent)
+if ($Search_ContentRegex)
 {
 	$names = ''
 	$Search_ContentRegex | ForEach-Object {
@@ -230,11 +236,12 @@ if ($Result_FileContent)
 		$value = $_.Value
 		
 		$TargetFiles += ('<h3>' + $key + '</h3>')
-		$value.Split(",") | ForEach-Object {
-			$fileName = $_.Trim()
-			
+		$value | ForEach-Object {	
 			$TargetFiles += '<table class="result-list">'
-			$TargetFiles += ('<tr><th colspan="2">' + $fileName + '</th></tr>')
+			$TargetFiles += ('<tr><th colspan="2">' + $_.FileName + '</th></tr>')
+			for ($i=0; $i -le $_.LinesNumbers.Length; $i++) {
+				$TargetFiles += ('<tr><td>' + $_.LinesNumbers[$i] + '</td><td>' + $_.LinesContent[$i] + '</td></tr>')
+			}
 			$TargetFiles += '</table>'
 		}
 	}
