@@ -1,7 +1,7 @@
 $Search_Folder = 'Tests'
 
 $Search_ContentRegex = ('invalid')
-$Search_FilesRegex = ('\.invalid$', '\.doc$', '\.xls$')
+$Search_FilesRegex = ('\.invalid$')
 $Search_ExcludeFiles = ('\.exe$', '\.dll$', '\.gif$', '\.png$', '\.jpg$', '\.jpeg$', '\.nupkg$')
 
 $Result_Template = ((Split-Path $MyInvocation.MyCommand.Path) + '\Common\result_template.html')
@@ -142,7 +142,7 @@ $Search_ContentRegex | ForEach-Object {
 		$resultObj = New-Object PackageCheckResult
 		$resultObj.FileName = $_
 
-		$matches = Select-String $token $_ | Select LineNumber,Line | Foreach {
+		$matches = Select-String -Path $_ -Pattern $token -AllMatches | Foreach {
 			$resultObj.LinesNumbers += $_.LineNumber
 			$resultObj.LinesContent += $_.Line
 		}
@@ -233,7 +233,7 @@ if ($Result_FileContent)
 		$value | ForEach-Object {	
 			$TargetFiles += '<table class="result-list">'
 			$TargetFiles += ('<tr><th colspan="2">' + $_.FileName + '</th></tr>')
-			for ($i=0; $i -le $_.LinesNumbers.Length; $i++) {
+			for ($i=0; $i -le $_.LinesNumbers.Length - 1; $i++) {
 				$TargetFiles += ('<tr><td>' + $_.LinesNumbers[$i] + '</td><td>' + $_.LinesContent[$i] + '</td></tr>')
 			}
 			$TargetFiles += '</table>'

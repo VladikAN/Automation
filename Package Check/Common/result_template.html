@@ -9,13 +9,13 @@
 			
 			.clear { clear:both; }
 			
-			body { background-color: #e2e2e2; }
+			body { background-color: #e2e2e2; margin: 0; }
 			
 			#content {
 				background-color: #fff;
 				box-shadow: 0 0 14px 1px rgba(0,0,0,0.2);
-				border: 1px solid #777;
-				border-radius: 15px;
+				border-left: 1px solid #777;
+				border-right: 1px solid #777;
 				width: 1024px;
 				margin: 0 auto;
 				padding: 0 20px 20px 20px;
@@ -32,16 +32,13 @@
 			
 			span.mark { background-color: #ffdddd; }
 
-			div.result-list { 
-				font-size: 12px;
-				padding: 0;
-			}
+			div.result-list { font-size: 12px; padding: 0; }
 			div.result-list div { padding: 5px; }
 
-			table.result-list { margin-bottom: 5px; width: 100%; }
-			table.result-list tr th, table.result-list tr td {
-				font-size: 12px;
-			}
+			table.result-list { border-spacing: 0; border-collapse: collapse; margin-bottom: 5px; width: 100%; }
+			
+			table.result-list tr th,
+			table.result-list tr td { font-size: 12px; }
 
 			table.result-list  tr th {
 				background-color: #eaeaea;
@@ -54,6 +51,9 @@
 				text-align: left;
 				padding: 5px;				
 			}
+
+			table.result-list  tr td { border: 1px solid #e5e5e5; color: #333; }
+ 			table.result-list  tr td:first-child { text-align: center; width:50px; }
 		</style>
 	</head>
 	
