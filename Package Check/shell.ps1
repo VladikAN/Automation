@@ -145,9 +145,11 @@ $Search_ContentRegex | ForEach-Object {
 		$matches = Select-String -Path $_ -Pattern $token -AllMatches | Foreach {
 			$resultObj.LinesNumbers += $_.LineNumber
 			$resultObj.LinesContent += $_.Line
+			$resultObj.LinesMatch += $_.Matches
 		}
 		
 		if ($matches.Length -ne 0) {
+			$resultObj.LinesMatch = $resultObj.LinesMatch | Select -uniq
 			$Result_FileContent[$token] += $resultObj
 		}
 	}
@@ -226,16 +228,23 @@ if ($Result_FileContent)
 {
 	$TargetFiles = ''
 	$Result_FileContent.GetEnumerator() | ForEach-Object {
-		$key = $_.Key
-		$value = $_.Value
+		$token = $_.Key
+		$obj = $_.Value
 		
-		$TargetFiles += ('<h3>' + $key + '</h3>')
-		$value | ForEach-Object {	
+		$TargetFiles += ('<h3>' + $token + '</h3>')
+		$obj | ForEach-Object {	
 			$TargetFiles += '<table class="result-list">'
 			$TargetFiles += ('<tr><th colspan="2">' + $_.FileName + '</th></tr>')
-			for ($i=0; $i -le $_.LinesNumbers.Length - 1; $i++) {
-				$TargetFiles += ('<tr><td>' + $_.LinesNumbers[$i] + '</td><td>' + $_.LinesContent[$i] + '</td></tr>')
+			
+			for ($i = 0; $i -le $_.LinesNumbers.Length - 1; $i++) {
+				$content = $_.LinesContent[$i]
+				$_.LinesMatch | Foreach {
+					$content = $content.replace($_, ('<span class="mark">' + $_ + '</span>'))
+				}
+
+				$TargetFiles += ('<tr><td>' + $_.LinesNumbers[$i] + '</td><td>' + $content + '</td></tr>')
 			}
+
 			$TargetFiles += '</table>'
 		}
 	}
