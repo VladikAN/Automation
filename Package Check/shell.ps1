@@ -104,14 +104,11 @@ Write-Host 'Full file extensions check...'
 $Result_FileExtensions = @{}
 $Search_FilesRegex | ForEach-Object {
 	$token = $_.Trim()
-	
+	$Result_FileExtensions[$token] = @()
+
 	$Express_FileExtensions | ForEach-Object {
 		if ($_ -match $token) {
-			if ($Result_FileExtensions[$token]) {
-				$Result_FileExtensions[$token] += (',' + $_)
-			} else {
-				$Result_FileExtensions[$token] = $_
-			}
+			$Result_FileExtensions[$token] += $_
 		}
 	}
 }
@@ -123,14 +120,11 @@ Write-Host 'Full file names check...'
 $Result_FileNames = @{}
 $Search_ContentRegex | ForEach-Object {
 	$token = $_.Trim()
-	
+	$Result_FileNames[$token] = @()
+
 	$Express_FileNames | ForEach-Object {
 		if ($_ -match $token) {
-			if ($Result_FileNames[$token]) {
-				$Result_FileNames[$token] += (',' + $_)
-			} else {
-				$Result_FileNames[$token] = $_
-			}
+			$Result_FileNames[$token] += $_
 		}
 	}
 }
@@ -183,7 +177,7 @@ if ($Result_FileExtensions)
 		$key = $_.Key
 		$value = $_.Value
 		
-		$value.Split(",") | ForEach-Object {
+		$value | ForEach-Object {
 			$fileName = $_.Trim()
 			$match = ([regex]$key).Matches($filename);
 
@@ -215,7 +209,7 @@ if ($Result_FileNames)
 		$key = $_.Key
 		$value = $_.Value
 		
-		$value.Split(",") | ForEach-Object {
+		$value | ForEach-Object {
 			$fileName = $_.Trim()
 			$match = ([regex]$key).Matches($filename);
 
