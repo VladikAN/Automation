@@ -30,13 +30,13 @@
 				padding: 2px 5px;
 			}
 			
-			span.note { background-color: #fafbd2; }
 			span.mark { background-color: #ffdddd; }
 
 			div.result-list { font-size: 12px; padding: 0; }
 			div.result-list div { padding: 5px; }
 
-			table.result-list { border-spacing: 0; border-collapse: collapse; margin-bottom: 10px; width: 100%; }
+			div.result-list-wrapper { overflow-x: auto; overflow-y: none; margin-bottom: 10px; width: 100%; }
+			table.result-list { border-spacing: 0; border-collapse: collapse; width: 100%; }
 			
 			table.result-list tr th,
 			table.result-list tr td { font-size: 12px; }
@@ -54,7 +54,8 @@
 			}
 
 			table.result-list  tr td { border: 1px solid #e5e5e5; color: #333; }
- 			table.result-list  tr td:first-child { text-align: center; width:50px; }
+ 			table.result-list  tr td:first-child { text-align: center; width:50px !important; }
+ 			table.result-list  tr td:last-child { white-space: nowrap;; }
 		</style>
 	</head>
 	

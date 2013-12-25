@@ -232,14 +232,11 @@ if ($Result_FileContent)
 		
 		$ResultFiles += ('<h3>' + $token + '</h3>')
 		$obj | ForEach-Object {	
-			$ResultFiles += '<table class="result-list">'
+			$ResultFiles += '<div class="result-list-wrapper"><table class="result-list">'
 			$ResultFiles += ('<tr><th colspan="2">' + $_.FileName + '</th></tr>')
 			
 			for ($i = 0; $i -le $_.LinesNumbers.Length - 1; $i++) {
 				$content = $_.LinesContent[$i]
-				if ($content.Length -ge 500) {
-					$content = $content.SubString(0, 500) + ' <span class="note">truncated result</span>'
-				}
 
 				$_.LinesMatch | Foreach {
 					$content = $content.replace($_, ('<span class="mark">' + $_ + '</span>'))
@@ -248,7 +245,7 @@ if ($Result_FileContent)
 				$ResultFiles += ('<tr><td>' + $_.LinesNumbers[$i] + '</td><td>' + $content + '</td></tr>')
 			}
 
-			$ResultFiles += '</table>'
+			$ResultFiles += '</table></div>'
 		}
 	}
 }
