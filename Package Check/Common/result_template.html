@@ -2,12 +2,10 @@
 	<head>
 		<style type="text/css">
 			* { font-family: Consolas, "Liberation Mono", Courier, monospace; }
-			h1, h2 { text-decoration: none; color: #777; }
+			h1, h2, h3 { clear: both; color: #777; text-decoration: none; }
 			h1 { font-size: 30px; }
 			h2 { font-size: 20px; }
-			h3 { font-size: 16px; }
-			
-			.clear { clear:both; }
+			h3 { color: #000; font-size: 16px; }
 			
 			body { background-color: #e2e2e2; margin: 0; }
 			
@@ -21,15 +19,16 @@
 				padding: 0 20px 20px 20px;
 			}
 			
-			#extensions div, #contents div {
+			.patterns div {
 				border: 1px solid #777;
 				border-radius: 5px;
-				float: left;
+				display: inline-block;
 				font-size: 12px;
 				margin-right: 10px;
 				padding: 2px 5px;
 			}
 			
+			span.info { background-color: #ddffdd; }
 			span.mark { background-color: #ffdddd; }
 
 			div.result-list { font-size: 12px; padding: 0; }
@@ -53,47 +52,32 @@
 				padding: 5px;				
 			}
 
-			table.result-list  tr td { border: 1px solid #e5e5e5; color: #333; }
- 			table.result-list  tr td:first-child { text-align: center; width:50px !important; }
- 			table.result-list  tr td:last-child { white-space: nowrap;; }
+			table.result-list tr td { border: 1px solid #e5e5e5; color: #333; }
+ 			table.result-list tr td:first-child { text-align: center; width:50px !important; }
+ 			table.result-list tr td:last-child { white-space: nowrap;; }
 		</style>
 	</head>
 	
 	<body>
 		<div id='content'>
+			<h1>Package check results</h1>
 			<div>
-				<h1>File extensions check result</h1>
+				<h2>Denied files:</h2>
+				<div class="patterns">%FileExtension%</div>
 				
-				<h2>Denied Extensions</h2>
-				<div id="extensions">
-					%FileExtension%
-				</div>
-				<div class="clear"></div>
-				
-				<h2>Extensions Results</h2>
-				<div>
-					%FileExtensionResults%
-				</div>
+				<h2>Denied files check result:</h2>
+				<div>%FileExtensionResults%</div>
 			</div>
 			
 			<div>
-				<h1>File name & content check result</h1>
-			
 				<h2>Denied Content</h2>
-				<div id="contents">
-					%DeniedContent%
-				</div>
-				<div class="clear"></div>
+				<div class="patterns">%DeniedContent%</div>
 				
-				<h2>Denied Names Results</h2>
-				<div>
-					%FileNameResult%
-				</div>
+				<h2>Denied content names result:</h2>
+				<div>%FileNameResult%</div>
 				
-				<h2>Denied Content Results</h2>
-				<div>
-					%FileContentResult%
-				</div>
+				<h2>Denied content files result:</h2>
+				<div>%FileContentResult%</div>
 			</div>
 		</div>
 	</body>
