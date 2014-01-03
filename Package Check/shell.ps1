@@ -2,7 +2,7 @@ $Search_Folder = 'C:\Vlad\Github\Daily-Stuff\Package Check\Tests\'
 
 $Search_ContentRegex = ('invalid', 'wrong')
 $Search_FilesRegex = ('\.invalid$')
-$Search_ExcludeFiles = ('\.exe$', '\.dll$', '\.gif$', '\.png$', '\.jpg$', '\.jpeg$', '\.nupkg$', '\.nuspec$', '\\jquery\.globalize\\cultures\\globalize\.culture\..*\.js$', '\\jquery\.globalize\\cultures\\globalize\.cultures\.js$')
+$Search_ExcludeFiles = ('\.eot$', '\.woff$', '\.xpi$','\.ttf$','\.chm$', '\.exe$', '\.dll$', '\.gif$', '\.png$', '\.jpg$', '\.jpeg$', '\.nupkg$', '\.nuspec$', '\\jquery\.globalize\\cultures\\globalize\.culture\..*\.js$', '\\jquery\.globalize\\cultures\\globalize\.cultures\.js$')
 
 $Result_Template = ((Split-Path $MyInvocation.MyCommand.Path) + '\Common\result_template.html')
 $Result_File = ((Split-Path $MyInvocation.MyCommand.Path) + '\result.html')
