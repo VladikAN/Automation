@@ -25,11 +25,13 @@ $Search_ExcludeFiles_Common = '(?>' + ($Search_ExcludeFiles -join '|') + ')'
 
 #
 # Filling files array
+$Search_Folder = $Search_Folder.ToLower()
 $TargetFiles = @{}
 Get-ChildItem $Search_Folder -Force -Recurse | ?{ !$_.PSIsContainer } | ForEach-Object {
 	if ($_.FullName -notmatch $Search_ExcludeFiles_Common) {
-		$key = $_.FullName.replace($Search_Folder, '\');
-		$TargetFiles[$key] = $_.FullName
+		$fullName = $_.FullName.ToLower()
+		$key = $fullName.replace($Search_Folder, '\');
+		$TargetFiles[$key] = $fullName
 	}
 }
 
@@ -129,21 +131,19 @@ $Search_ContentRegex | ForEach-Object {
 Copy-Item $Result_Template $Result_File
 
 # Printing files extensions
-$extensions = 'None'
+$extensions = ''
 if ($Search_FilesRegex)
 {
-	$extensions = ''
 	$Search_FilesRegex | ForEach-Object {
 		$token = $_.Trim()
-		$extensions += ('<div>' + $token + '</div>')
+		$extensions += ('<div class="pattern">' + $token + '</div>')
 	}
 }
-(Get-Content $Result_File) | ForEach-Object { $_ -replace "%FileExtension%", ($extensions) } | Set-Content $Result_File
 	
-$ResultFiles = '<span class="info">Everything is clean</span>'
+$FileExtensionResult = ''
 if ($Result_FileExtensions.GetEnumerator().Length -ne 0)
 {
-	$ResultFiles = '<div class="result-list">'
+	$FileExtensionResult = '<div class="result-list">'
 	$Result_FileExtensions.GetEnumerator() | ForEach-Object {
 		$key = $_.Key
 		$value = $_.Value
@@ -153,60 +153,55 @@ if ($Result_FileExtensions.GetEnumerator().Length -ne 0)
 			$match = ([regex]$key).Matches($filename);
 
 			$fileName = $fileName.replace($match, ('<span class="mark">' + $match + '</span>'))
-			$ResultFiles += ('<div>' + $fileName + '</div>')
+			$FileExtensionResult += ('<div>' + $fileName + '</div>')
 		}
 	}
-	$ResultFiles += '</div>'
+	$FileExtensionResult += '</div>'
 }
-(Get-Content $Result_File) | ForEach-Object { $_ -replace "%FileExtensionResults%", ($ResultFiles) } | Set-Content $Result_File
 
 # Printing files names
-$names = 'None'
+$names = ''
 if ($Search_ContentRegex)
 {
-	$names = ''
 	$Search_ContentRegex | ForEach-Object {
 		$token = $_.Trim()
-		$names += ('<div>' + $token + '</div>')
+		$names += ('<div class="pattern">' + $token + '</div>')
 	}
 }
-(Get-Content $Result_File) | ForEach-Object { $_ -replace "%DeniedContent%", ($names) } | Set-Content $Result_File
 
-$ResultFiles = '<span class="info">Everything is clean</span>'
+$FileNameResult = ''
 if ($Result_FileNames.GetEnumerator().Length -ne 0)
 {
-	$ResultFiles = '<div class="result-list">'
+	$FileNameResult = '<div class="result-list">'
 	$Result_FileNames.GetEnumerator() | ForEach-Object {
 		$key = $_.Key
 		$value = $_.Value
 		
 		$value | ForEach-Object {
 			$fileName = $_.Trim()
-			$match = ([regex]$key).Matches($filename);
-
-			$fileName = $fileName.replace($match, ('<span class="mark">' + $match + '</span>'))
-			$ResultFiles += ('<div>' + $fileName + '</div>')
+			$match = ([regex]$key).Matches($filename) | Select -uniq | Foreach {
+				$fileName = $fileName.replace($_, ('<span class="mark">' + $_ + '</span>'))
+			}
+			$FileNameResult += ('<div>' + $fileName + '</div>')
 		}
 	}
-	$ResultFiles += '</div>'
+	$FileNameResult += '</div>'
 }
-(Get-Content $Result_File) | ForEach-Object { $_ -replace "%FileNameResult%", ($ResultFiles) } | Set-Content $Result_File
 
-$ResultFiles = '<span class="info">Everything is clean</span>'
+$FileContentResult = ''
 if ($Result_FileContent.GetEnumerator().Length -ne 0)
 {
-	$ResultFiles = ''
 	$Result_FileContent.GetEnumerator() | ForEach-Object {
 		$token = $_.Key
 		$obj = $_.Value
 		
 		if ($obj.Length -ne 0)
 		{
-			$ResultFiles += ('<h3>' + $token + '</h3>')
+			$FileContentResult += ('<div class="pattern">' + $token + '</div>')
 		
 			$obj | ForEach-Object {	
-				$ResultFiles += '<div class="result-list-wrapper"><table class="result-list">'
-				$ResultFiles += ('<tr><th colspan="2">' + $_.FileName + '</th></tr>')
+				$FileContentResult += '<div class="result-list-wrapper"><table class="result-list">'
+				$FileContentResult += ('<tr><th colspan="2">' + $_.FileName + '</th></tr>')
 				
 				for ($i = 0; $i -le $_.LinesNumbers.Length - 1; $i++) {
 					$content = $_.LinesContent[$i]
@@ -215,12 +210,27 @@ if ($Result_FileContent.GetEnumerator().Length -ne 0)
 						$content = $content.replace($_, ('<span class="mark">' + $_ + '</span>'))
 					}
 
-					$ResultFiles += ('<tr><td>' + $_.LinesNumbers[$i] + '</td><td>' + $content + '</td></tr>')
+					$FileContentResult += ('<tr><td>' + $_.LinesNumbers[$i] + '</td><td>' + $content + '</td></tr>')
 				}
 
-				$ResultFiles += '</table></div>'
+				$FileContentResult += '</table></div>'
 			}
 		}
 	}
 }
-(Get-Content $Result_File) | ForEach-Object { $_ -replace "%FileContentResult%", ($ResultFiles) } | Set-Content $Result_File
+
+$cleanText = '<span class="info">Everything is clean</span>'
+
+if ($extensions -eq '') { $extensions = 'None' }
+if ($FileExtensionResult -eq '') { $FileExtensionResult = $cleanText }
+
+(Get-Content $Result_File) | ForEach-Object { $_ -replace "%FileExtension%", ($extensions) } | Set-Content $Result_File
+(Get-Content $Result_File) | ForEach-Object { $_ -replace "%FileExtensionResults%", ($FileExtensionResult) } | Set-Content $Result_File
+
+if ($name -eq '') { $names = 'None' }
+if ($FileNameResult -eq '') { $FileNameResult = $cleanText }
+if ($FileContentResult -eq '') { $FileContentResult = $cleanText }
+
+(Get-Content $Result_File) | ForEach-Object { $_ -replace "%DeniedContent%", ($names) } | Set-Content $Result_File
+(Get-Content $Result_File) | ForEach-Object { $_ -replace "%FileNameResult%", ($FileNameResult) } | Set-Content $Result_File
+(Get-Content $Result_File) | ForEach-Object { $_ -replace "%FileContentResult%", ($FileContentResult) } | Set-Content $Result_File
