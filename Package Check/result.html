@@ -1,15 +1,13 @@
 <html>
 	<head>
 		<style type="text/css">
-			* { font-family: Consolas, "Liberation Mono", Courier, monospace; }
-			h1, h2, h3 { clear: both; color: #777; text-decoration: none; text-shadow: 0px 1px 0 #ccc; }
-			h1 { font-size: 30px; }
-			h2 { font-size: 20px; }
-			h3 { color: #000; font-size: 16px; }
-			
-			body { background-color: #e2e2e2; margin: 0; }
+			body { background-color: #e2e2e2; font-family: Consolas; font-size: 12px; margin: 0; }
 			p { margin: 5px 0; }
 
+			h1, h2 { clear: both; color: #777; text-decoration: none; text-shadow: 0px 1px 0 #ccc; margin: 8px 0; padding: 2px 0; }
+			h1 { background-color: #e0e0e0; font-size: 24px; }
+			h2 { background-color: #f0f0f0; font-size: 16px; }
+			
 			#content {
 				background-color: #fff;
 				box-shadow: 0 0 14px 1px rgba(0,0,0,0.2);
@@ -17,7 +15,7 @@
 				border-right: 1px solid #777;
 				width: 1024px;
 				margin: 0 auto;
-				padding: 0 20px 20px 20px;
+				padding: 8px 20px 20px 20px;
 			}
 			
 			div.pattern {
@@ -30,22 +28,14 @@
 				padding: 2px 5px;
 			}
 
-			div.pattern.clean { background-color: #ddffdd; }
-			div.pattern.error { background-color: #ffdddd; }
-			
-			span.match.clean { background-color: #ddffdd; }
-			span.match.error { background-color: #ffdddd; }
-
-			div.result-list { font-size: 12px; padding: 0; }
-			div.result-list div { padding: 5px; }
+			div.pattern.clean, span.match.clean { background-color: #ddffdd; }
+			div.pattern.error, span.match.error { background-color: #ffdddd; }
 
 			div.result-list-wrapper { overflow-x: auto; overflow-y: none; margin: 10px 0; width: 100%; }
-			table.result-list { border-spacing: 0; border-collapse: collapse; width: 100%; }
 			
-			table.result-list tr th,
-			table.result-list tr td { font-size: 12px; }
-
-			table.result-list  tr th {
+			table.result-list { border-spacing: 0; border-collapse: collapse; width: 100%; }
+			table.result-list tr th, table.result-list tr td { font-size: 12px; }
+			table.result-list tr th {
 				background-color: #eaeaea;
 				background-image: -moz-linear-gradient(#fafafa, #eaeaea);
 				background-image: -webkit-linear-gradient(#fafafa, #eaeaea);
@@ -58,30 +48,24 @@
 			}
 
 			table.result-list tr td { border: 1px solid #e5e5e5; color: #333; }
-			table.result-list tr td:first-child,
- 			table.result-list tr td:first-child div { text-align: center; width: 40px !important; }
+			table.result-list tr td:first-child, table.result-list tr td:first-child div { text-align: center; width: 40px !important; }
  			table.result-list tr td:last-child { white-space: nowrap;; }
 		</style>
 	</head>
 	
 	<body>
 		<div id='content'>
-			<h1>Package check results</h1>
 			<div>
-				<h2>Denied files:</h2>
+				<h1>Denied files</h1>
 				<div><div class="pattern error">\.invalid$</div><div class="pattern clean">\.valid$</div></div>
-				
 				<h2>Denied files check result:</h2>
 				<div><div class="result-list"><p>\case 4 invalid extension\file3<span class="match error">.invalid</span></p><p>\case 4 invalid extension\file2<span class="match error">.invalid</span></p><p>\case 4 invalid extension\file1<span class="match error">.invalid</span></p></div></div>
 			</div>
-			
 			<div>
-				<h2>Denied Content</h2>
+				<h1>Denied content</h1>
 				<div><div class="pattern error">invalid</div><div class="pattern error">wrong</div></div>
-				
 				<h2>Denied content names result:</h2>
 				<div><div class="result-list"><p>\case 4 <span class="match error">invalid</span> extension\file3.<span class="match error">invalid</span></p><p>\case 4 <span class="match error">invalid</span> extension\file2.<span class="match error">invalid</span></p><p>\case 6 <span class="match error">invalid</span> names\<span class="match error">invalid</span>.txt</p><p>\case 4 <span class="match error">invalid</span> extension\file1.<span class="match error">invalid</span></p></div></div>
-				
 				<h2>Denied content files result:</h2>
 				<div><div class="pattern error">wrong</div><div class="result-list-wrapper"><table class="result-list"><tr><th colspan="2">\case 0 simple files\file4.txt</th></tr><tr><td><div>2</div></td><td>%<span class="match error">wrong</span>%</td></tr></table></div><div class="result-list-wrapper"><table class="result-list"><tr><th colspan="2">\case 0 simple files\file2.txt</th></tr><tr><td><div>1</div></td><td>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque%invalid% laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit, amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus, qui blanditiis praesentium voluptatum deleniti atque corrupti, quos dolores et quas molestias excepturi sint, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet, ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.%<span class="match error">wrong</span>%</td></tr></table></div><div class="pattern error">invalid</div><div class="result-list-wrapper"><table class="result-list"><tr><th colspan="2">\case 4 invalid extension\file3.invalid</th></tr><tr><td><div>1</div></td><td>%<span class="match error">invalid</span>%</td></tr></table></div><div class="result-list-wrapper"><table class="result-list"><tr><th colspan="2">\case 3 no extension\file2</th></tr><tr><td><div>1</div></td><td>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque%<span class="match error">invalid</span>% laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit, amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus, qui blanditiis praesentium voluptatum deleniti atque corrupti, quos dolores et quas molestias excepturi sint, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet, ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.</td></tr></table></div><div class="result-list-wrapper"><table class="result-list"><tr><th colspan="2">\case 4 invalid extension\file2.invalid</th></tr><tr><td><div>1</div></td><td>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque%<span class="match error">invalid</span>% laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit, amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus, qui blanditiis praesentium voluptatum deleniti atque corrupti, quos dolores et quas molestias excepturi sint, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet, ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.</td></tr></table></div><div class="result-list-wrapper"><table class="result-list"><tr><th colspan="2">\case 3 no extension\file3</th></tr><tr><td><div>1</div></td><td>%<span class="match error">invalid</span>%</td></tr></table></div><div class="result-list-wrapper"><table class="result-list"><tr><th colspan="2">\case 2 folders\folder 1\folder 3\file3.txt</th></tr><tr><td><div>1</div></td><td>%<span class="match error">invalid</span>%</td></tr></table></div><div class="result-list-wrapper"><table class="result-list"><tr><th colspan="2">\case 0 simple files\file4.txt</th></tr><tr><td><div>1</div></td><td>%<span class="match error">invalid</span>%</td></tr></table></div><div class="result-list-wrapper"><table class="result-list"><tr><th colspan="2">\case 0 simple files\file3.txt</th></tr><tr><td><div>1</div></td><td>%<span class="match error">invalid</span>%</td></tr><tr><td><div>2</div></td><td>%<span class="match error">invalid</span>%</td></tr><tr><td><div>3</div></td><td>%<span class="match error">invalid</span>%%<span class="match error">invalid</span>%</td></tr><tr><td><div>4</div></td><td>%<span class="match error">invalid</span>%</td></tr><tr><td><div>6</div></td><td>%<span class="match error">invalid</span>%</td></tr></table></div><div class="result-list-wrapper"><table class="result-list"><tr><th colspan="2">\case 1 hidden files\file3.txt</th></tr><tr><td><div>1</div></td><td>%<span class="match error">invalid</span>%</td></tr></table></div><div class="result-list-wrapper"><table class="result-list"><tr><th colspan="2">\case 2 folders\folder 2\file2.txt</th></tr><tr><td><div>1</div></td><td>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque%<span class="match error">invalid</span>% laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit, amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus, qui blanditiis praesentium voluptatum deleniti atque corrupti, quos dolores et quas molestias excepturi sint, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet, ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.</td></tr></table></div><div class="result-list-wrapper"><table class="result-list"><tr><th colspan="2">\case 1 hidden files\file2.txt</th></tr><tr><td><div>1</div></td><td>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque%<span class="match error">invalid</span>% laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit, amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus, qui blanditiis praesentium voluptatum deleniti atque corrupti, quos dolores et quas molestias excepturi sint, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet, ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.</td></tr></table></div><div class="result-list-wrapper"><table class="result-list"><tr><th colspan="2">\case 0 simple files\file2.txt</th></tr><tr><td><div>1</div></td><td>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque%<span class="match error">invalid</span>% laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit, amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus, qui blanditiis praesentium voluptatum deleniti atque corrupti, quos dolores et quas molestias excepturi sint, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet, ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.%wrong%</td></tr></table></div></div>
 			</div>

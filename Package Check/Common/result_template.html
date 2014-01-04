@@ -1,15 +1,13 @@
 <html>
 	<head>
 		<style type="text/css">
-			* { font-family: Consolas, "Liberation Mono", Courier, monospace; }
-			h1, h2, h3 { clear: both; color: #777; text-decoration: none; text-shadow: 0px 1px 0 #ccc; }
-			h1 { font-size: 30px; }
-			h2 { font-size: 20px; }
-			h3 { color: #000; font-size: 16px; }
-			
-			body { background-color: #e2e2e2; margin: 0; }
+			body { background-color: #e2e2e2; font-family: Consolas; font-size: 12px; margin: 0; }
 			p { margin: 5px 0; }
 
+			h1, h2 { clear: both; color: #777; text-decoration: none; text-shadow: 0px 1px 0 #ccc; margin: 8px 0; padding: 2px 0; }
+			h1 { background-color: #e0e0e0; font-size: 24px; }
+			h2 { background-color: #f0f0f0; font-size: 16px; }
+			
 			#content {
 				background-color: #fff;
 				box-shadow: 0 0 14px 1px rgba(0,0,0,0.2);
@@ -17,7 +15,7 @@
 				border-right: 1px solid #777;
 				width: 1024px;
 				margin: 0 auto;
-				padding: 0 20px 20px 20px;
+				padding: 8px 20px 20px 20px;
 			}
 			
 			div.pattern {
@@ -30,22 +28,14 @@
 				padding: 2px 5px;
 			}
 
-			div.pattern.clean { background-color: #ddffdd; }
-			div.pattern.error { background-color: #ffdddd; }
-			
-			span.match.clean { background-color: #ddffdd; }
-			span.match.error { background-color: #ffdddd; }
-
-			div.result-list { font-size: 12px; padding: 0; }
-			div.result-list div { padding: 5px; }
+			div.pattern.clean, span.match.clean { background-color: #ddffdd; }
+			div.pattern.error, span.match.error { background-color: #ffdddd; }
 
 			div.result-list-wrapper { overflow-x: auto; overflow-y: none; margin: 10px 0; width: 100%; }
-			table.result-list { border-spacing: 0; border-collapse: collapse; width: 100%; }
 			
-			table.result-list tr th,
-			table.result-list tr td { font-size: 12px; }
-
-			table.result-list  tr th {
+			table.result-list { border-spacing: 0; border-collapse: collapse; width: 100%; }
+			table.result-list tr th, table.result-list tr td { font-size: 12px; }
+			table.result-list tr th {
 				background-color: #eaeaea;
 				background-image: -moz-linear-gradient(#fafafa, #eaeaea);
 				background-image: -webkit-linear-gradient(#fafafa, #eaeaea);
@@ -58,30 +48,24 @@
 			}
 
 			table.result-list tr td { border: 1px solid #e5e5e5; color: #333; }
-			table.result-list tr td:first-child,
- 			table.result-list tr td:first-child div { text-align: center; width: 40px !important; }
+			table.result-list tr td:first-child, table.result-list tr td:first-child div { text-align: center; width: 40px !important; }
  			table.result-list tr td:last-child { white-space: nowrap;; }
 		</style>
 	</head>
 	
 	<body>
 		<div id='content'>
-			<h1>Package check results</h1>
 			<div>
-				<h2>Denied files:</h2>
+				<h1>Denied files</h1>
 				<div>%FileExtension%</div>
-				
 				<h2>Denied files check result:</h2>
 				<div>%FileExtensionResults%</div>
 			</div>
-			
 			<div>
-				<h2>Denied Content</h2>
+				<h1>Denied content</h1>
 				<div>%DeniedContent%</div>
-				
 				<h2>Denied content names result:</h2>
 				<div>%FileNameResult%</div>
-				
 				<h2>Denied content files result:</h2>
 				<div>%FileContentResult%</div>
 			</div>
