@@ -27,7 +27,6 @@ $Search_Folder = $Search_Folder.ToLower()
 $TargetFiles = @{}
 Get-ChildItem $Search_Folder -Force -Recurse | ?{ !$_.PSIsContainer } | ForEach-Object {
 	$fullName = $_.FullName.ToLower()
-
 	if ($_.FullName -notmatch $Search_ExcludeFiles_Common) {
 		$key = $fullName.replace($Search_Folder, '\');
 		$TargetFiles[$key] = $fullName
@@ -73,7 +72,6 @@ $Result_FileContent = @{}
 ForEach ($token in $Search_ContentRegex) {
 	$Express_FileContent | ForEach-Object {
 		$resultObj = New-Object PackageCheckResult
-		
 		$matches = Select-String -Path $TargetFiles[$_] -Pattern $token -AllMatches | Foreach {
 			$resultObj.LinesNumbers += $_.LineNumber
 			$resultObj.LinesContent += $_.Line
@@ -92,7 +90,6 @@ ForEach ($token in $Search_ContentRegex) {
 
 # Creating result
 Copy-Item $Result_Template $Result_File
-
 # Printing files extensions
 $TextFileExtension = ''
 if ($Search_FilesRegex)
@@ -192,14 +189,12 @@ $cleanText = '<span class="match clean">Everything is clean</span>'
 
 if ($TextFileExtension -eq '') { $TextFileExtension = 'None' }
 if ($TextFileExtensionResults -eq '') { $TextFileExtensionResults = $cleanText }
-
 (Get-Content $Result_File) | ForEach-Object { $_ -replace "%FileExtension%", ($TextFileExtension) } | Set-Content $Result_File
 (Get-Content $Result_File) | ForEach-Object { $_ -replace "%FileExtensionResults%", ($TextFileExtensionResults) } | Set-Content $Result_File
 
 if ($TextDeniedContent -eq '') { $TextDeniedContent = 'None' }
 if ($TextFileNameResult -eq '') { $TextFileNameResult = $cleanText }
 if ($TextFileContentResult -eq '') { $TextFileContentResult = $cleanText }
-
 (Get-Content $Result_File) | ForEach-Object { $_ -replace "%DeniedContent%", ($TextDeniedContent) } | Set-Content $Result_File
 (Get-Content $Result_File) | ForEach-Object { $_ -replace "%FileNameResult%", ($TextFileNameResult) } | Set-Content $Result_File
 (Get-Content $Result_File) | ForEach-Object { $_ -replace "%FileContentResult%", ($TextFileContentResult) } | Set-Content $Result_File
