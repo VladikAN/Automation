@@ -26,9 +26,9 @@ $Search_ExcludeFiles_Common = '(?>' + ($Search_ExcludeFiles -join '|') + ')'
 $Search_Folder = $Search_Folder.ToLower()
 $TargetFiles = @{}
 Get-ChildItem $Search_Folder -Force -Recurse | ?{ !$_.PSIsContainer } | ForEach-Object {
-	if ($_.FullName -notmatch $Search_ExcludeFiles_Common) {
-		$fullName = $_.FullName.ToLower()
+	$fullName = $_.FullName.ToLower()
 
+	if ($_.FullName -notmatch $Search_ExcludeFiles_Common) {
 		$key = $fullName.replace($Search_Folder, '\');
 		$TargetFiles[$key] = $fullName
 	}
@@ -36,58 +36,41 @@ Get-ChildItem $Search_Folder -Force -Recurse | ?{ !$_.PSIsContainer } | ForEach-
 
 # Express files check
 Write-Host 'Express file extensions check... ' -nonewline
-$Express_FileExtensions = @()
-$TargetFiles.GetEnumerator() | ForEach-Object {
-	if ($_.Value -match $Search_FilesRegex_Common) { $Express_FileExtensions += $_.Key }
-}
+$Express_FileExtensions = $TargetFiles.GetEnumerator() | Where-Object { $_.Value -match $Search_FilesRegex_Common } | Select -uniq -ExpandProperty Key
 Write-Host ($Express_FileExtensions.Length.ToString() + ' File(s)')
 
 Write-Host 'Express file names check... ' -nonewline
-$Express_FileNames = @()
-$TargetFiles.GetEnumerator() | ForEach-Object {
-	if ($_.Value -match $Search_ContentRegex_Common) { $Express_FileNames += $_.Key }
-}
+$Express_FileNames = $TargetFiles.GetEnumerator() | Where-Object { $_.Value -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key
 Write-Host ($Express_FileNames.Length.ToString() + ' File(s)')
 
 Write-Host 'Express file content check... ' -nonewline
-$Express_FileContent = @()
-$TargetFiles.GetEnumerator() | ForEach-Object {
-	$content = Get-Content -Path $_.Value
-	if ($content -match $Search_ContentRegex_Common) { $Express_FileContent += $_.Key }
-}
+$Express_FileContent = $TargetFiles.GetEnumerator() | Where-Object { (Get-Content -Path $_.Value) -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key
 Write-Host ($Express_FileContent.Length.ToString() + ' File(s)')
 
 # Checking files extensions
 Write-Host 'Full file extensions check...'
 $Result_FileExtensions = @{}
-$Search_FilesRegex | ForEach-Object {
-	$token = $_
-	$Express_FileExtensions | ForEach-Object {
-		if ($_ -match $token) {
-			if (-not $Result_FileExtensions.ContainsKey($token)) { $Result_FileExtensions[$token] = @() }
-			$Result_FileExtensions[$token] += $_
-		}
+ForEach ($token in $Search_FilesRegex) {
+	$Express_FileExtensions | Where-Object { $_ -match $token } | ForEach-Object {
+		if (-not $Result_FileExtensions.ContainsKey($token)) { $Result_FileExtensions[$token] = @() }
+		$Result_FileExtensions[$token] += $_
 	}
 }
 
 # Checking files names
 Write-Host 'Full file names check...'
 $Result_FileNames = @{}
-$Search_ContentRegex | ForEach-Object {
-	$token = $_
-	$Express_FileNames | ForEach-Object {
-		if ($_ -match $token) {
-			if (-not $Result_FileNames.ContainsKey($token)) { $Result_FileNames[$token] = @() }
-			$Result_FileNames[$token] += $_
-		}
+ForEach ($token in $Search_ContentRegex) {
+	$Express_FileNames | Where-Object { $_ -match $token } | ForEach-Object {
+		if (-not $Result_FileNames.ContainsKey($token)) { $Result_FileNames[$token] = @() }
+		$Result_FileNames[$token] += $_
 	}
 }
 
 # Checking files content
 Write-Host 'Full file content check...'
 $Result_FileContent = @{}
-$Search_ContentRegex | ForEach-Object {
-	$token = $_
+ForEach ($token in $Search_ContentRegex) {
 	$Express_FileContent | ForEach-Object {
 		$resultObj = New-Object PackageCheckResult
 		
@@ -131,11 +114,10 @@ if ($Result_FileExtensions.GetEnumerator().Length -ne 0)
 		$key = $_.Key
 		$value = $_.Value
 
-		$value | ForEach-Object {
-			$fileName = $_
-			$match = ([regex]$key).Matches($filename);
-
-			$fileName = $fileName.replace($match, ('<span class="match error">' + $match + '</span>'))
+		ForEach ($fileName in $value){
+			$match = ([regex]$key).Matches($filename) | Select -uniq | Foreach {
+				$fileName = $fileName.replace($_, ('<span class="match error">' + $_ + '</span>'))
+			}
 			$TextFileExtensionResults += ('<p>' + $fileName + '</p>')
 		}
 	}
@@ -164,8 +146,7 @@ if ($Result_FileNames.GetEnumerator().Length -ne 0)
 		$key = $_.Key
 		$value = $_.Value
 		
-		$value | ForEach-Object {
-			$fileName = $_
+		ForEach ($fileName in $value){
 			$match = ([regex]$key).Matches($filename) | Select -uniq | Foreach {
 				$fileName = $fileName.replace($_, ('<span class="match error">' + $_ + '</span>'))
 			}
