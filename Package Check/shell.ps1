@@ -33,59 +33,75 @@ Get-ChildItem $Search_Folder -Force -Recurse | ?{ !$_.PSIsContainer } | ForEach-
 	}
 }
 
-# Express files check
+if ($TargetFiles -eq $null)
+{
+	exit
+}
+
+#
+# Checking files extensions
+$Result_FileExtensions = @{}
 Write-Host 'Express file extensions check... ' -nonewline
 $Express_FileExtensions = $TargetFiles.GetEnumerator() | Where-Object { $_.Value -match $Search_FilesRegex_Common } | Select -uniq -ExpandProperty Key
-Write-Host ($Express_FileExtensions.Length.ToString() + ' File(s)')
+if ($Express_FileExtensions) {
+	Write-Host ($Express_FileExtensions.Length.ToString() + ' File(s)')
+	Write-Host 'Full file extensions check...'
+	ForEach ($token in $Search_FilesRegex) {
+		$Express_FileExtensions | Where-Object { $_ -match $token } | ForEach-Object {
+			if (-not $Result_FileExtensions.ContainsKey($token)) { $Result_FileExtensions[$token] = @() }
+			$Result_FileExtensions[$token] += $_
+		}
+	}
+} else {
+	Write-Host '0 File(s)'
+}
 
+#
+# Checking files names
+$Result_FileNames = @{}
 Write-Host 'Express file names check... ' -nonewline
 $Express_FileNames = $TargetFiles.GetEnumerator() | Where-Object { $_.Value -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key
-Write-Host ($Express_FileNames.Length.ToString() + ' File(s)')
+if ($Express_FileNames) {
+	Write-Host ($Express_FileNames.Length.ToString() + ' File(s)')
+	Write-Host 'Full file names check...'
+	ForEach ($token in $Search_ContentRegex) {
+		$Express_FileNames | Where-Object { $_ -match $token } | ForEach-Object {
+			if (-not $Result_FileNames.ContainsKey($token)) { $Result_FileNames[$token] = @() }
+			$Result_FileNames[$token] += $_
+		}
+	}
+} else {
+	Write-Host '0 File(s)'
+}
 
+#
+# Checking files content
+$Result_FileContent = @{}
 Write-Host 'Express file content check... ' -nonewline
 $Express_FileContent = $TargetFiles.GetEnumerator() | Where-Object { (Get-Content -Path $_.Value) -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key
-Write-Host ($Express_FileContent.Length.ToString() + ' File(s)')
+if ($Express_FileContent) {
+	Write-Host ($Express_FileContent.Length.ToString() + ' File(s)')
+	Write-Host 'Full file content check...'
+	ForEach ($token in $Search_ContentRegex) {
+		$Express_FileContent | ForEach-Object {
+			$resultObj = New-Object PackageCheckResult
+			$matches = Select-String -Path $TargetFiles[$_] -Pattern $token -AllMatches | Foreach {
+				$resultObj.LinesNumbers += $_.LineNumber
+				$resultObj.LinesContent += $_.Line
+				$resultObj.LinesMatch += $_.Matches
+			}
 
-# Checking files extensions
-Write-Host 'Full file extensions check...'
-$Result_FileExtensions = @{}
-ForEach ($token in $Search_FilesRegex) {
-	$Express_FileExtensions | Where-Object { $_ -match $token } | ForEach-Object {
-		if (-not $Result_FileExtensions.ContainsKey($token)) { $Result_FileExtensions[$token] = @() }
-		$Result_FileExtensions[$token] += $_
-	}
-}
+			if ($resultObj.LinesMatch.Length -and $resultObj.LinesMatch.Length.ToString() -ne '0') {
+				$resultObj.FileName = $_
+				$resultObj.LinesMatch = $resultObj.LinesMatch | Select -uniq
 
-# Checking files names
-Write-Host 'Full file names check...'
-$Result_FileNames = @{}
-ForEach ($token in $Search_ContentRegex) {
-	$Express_FileNames | Where-Object { $_ -match $token } | ForEach-Object {
-		if (-not $Result_FileNames.ContainsKey($token)) { $Result_FileNames[$token] = @() }
-		$Result_FileNames[$token] += $_
-	}
-}
-
-# Checking files content
-Write-Host 'Full file content check...'
-$Result_FileContent = @{}
-ForEach ($token in $Search_ContentRegex) {
-	$Express_FileContent | ForEach-Object {
-		$resultObj = New-Object PackageCheckResult
-		$matches = Select-String -Path $TargetFiles[$_] -Pattern $token -AllMatches | Foreach {
-			$resultObj.LinesNumbers += $_.LineNumber
-			$resultObj.LinesContent += $_.Line
-			$resultObj.LinesMatch += $_.Matches
-		}
-
-		if ($resultObj.LinesMatch.Length -and $resultObj.LinesMatch.Length.ToString() -ne '0') {
-			$resultObj.FileName = $_
-			$resultObj.LinesMatch = $resultObj.LinesMatch | Select -uniq
-
-			if (-not $Result_FileContent.ContainsKey($token)) { $Result_FileContent[$token] = @() }
-			$Result_FileContent[$token] += $resultObj
+				if (-not $Result_FileContent.ContainsKey($token)) { $Result_FileContent[$token] = @() }
+				$Result_FileContent[$token] += $resultObj
+			}
 		}
 	}
+} else {
+	Write-Host '0 File(s)'
 }
 
 # Creating result
