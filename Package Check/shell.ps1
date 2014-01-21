@@ -1,7 +1,7 @@
 $Search_Folder = 'C:\Vlad\Github\Daily-Stuff\Package Check\Tests\'
 
 $Search_ContentRegex = ('invalid', 'wrong')
-$Search_FilesRegex = ('\.invalid$', '\.valid$')
+$Search_FilesRegex = ('\.invalid$', '\.valid$', '^(\\case 7.*\\).*(\.txt)$')
 $Search_ExcludeFiles = ('\.eot$', '\.woff$', '\.xpi$','\.ttf$','\.chm$', '\.exe$', '\.dll$', '\.gif$', '\.png$', '\.jpg$', '\.jpeg$', '\.nupkg$', '\.nuspec$', '\\jquery\.globalize\\cultures\\globalize\.culture\..*\.js$', '\\jquery\.globalize\\cultures\\globalize\.cultures\.js$')
 
 $Result_Template = ((Split-Path $MyInvocation.MyCommand.Path) + '\Common\result_template.html')
@@ -21,7 +21,7 @@ Add-Type -Language CSharp @"
 $Search_ContentRegex_Common = '(?>' + ($Search_ContentRegex -join '|') + ')'
 $Search_FilesRegex_Common = '(?>' + ($Search_FilesRegex -join '|') + ')'
 $Search_ExcludeFiles_Common = '(?>' + ($Search_ExcludeFiles -join '|') + ')'
-
+Write-Host $Search_FilesRegex_Common
 # Filling files array
 $Search_Folder = $Search_Folder.ToLower()
 $TargetFiles = @{}
@@ -42,7 +42,7 @@ if ($TargetFiles -eq $null)
 # Checking files extensions
 $Result_FileExtensions = @{}
 Write-Host 'Express file extensions check... ' -nonewline
-$Express_FileExtensions = $TargetFiles.GetEnumerator() | Where-Object { $_.Value -match $Search_FilesRegex_Common } | Select -uniq -ExpandProperty Key
+$Express_FileExtensions = $TargetFiles.GetEnumerator() | Where-Object { $_.Key -match $Search_FilesRegex_Common } | Select -uniq -ExpandProperty Key
 if ($Express_FileExtensions) {
 	Write-Host ($Express_FileExtensions.Length.ToString() + ' File(s)')
 	Write-Host 'Full file extensions check...'
@@ -60,7 +60,7 @@ if ($Express_FileExtensions) {
 # Checking files names
 $Result_FileNames = @{}
 Write-Host 'Express file names check... ' -nonewline
-$Express_FileNames = $TargetFiles.GetEnumerator() | Where-Object { $_.Value -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key
+$Express_FileNames = $TargetFiles.GetEnumerator() | Where-Object { $_.Key -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key
 if ($Express_FileNames) {
 	Write-Host ($Express_FileNames.Length.ToString() + ' File(s)')
 	Write-Host 'Full file names check...'
