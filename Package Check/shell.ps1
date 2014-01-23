@@ -1,4 +1,4 @@
-$Search_Folder = 'C:\Vlad\Github\Daily-Stuff\Package Check\Tests\'
+$Search_Folder = $args[0]
 
 $Search_ContentRegex = ('invalid', 'wrong')
 $Search_FilesRegex = ('\.invalid$', '\.valid$', '^(\\case 7.*\\).*(\.txt)$')
@@ -21,7 +21,7 @@ Add-Type -Language CSharp @"
 $Search_ContentRegex_Common = '(?>' + ($Search_ContentRegex -join '|') + ')'
 $Search_FilesRegex_Common = '(?>' + ($Search_FilesRegex -join '|') + ')'
 $Search_ExcludeFiles_Common = '(?>' + ($Search_ExcludeFiles -join '|') + ')'
-Write-Host $Search_FilesRegex_Common
+
 # Filling files array
 $Search_Folder = $Search_Folder.ToLower()
 $TargetFiles = @{}
