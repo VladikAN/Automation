@@ -1,11 +1,11 @@
-$Search_Folder = $args[0]
+[String]$Search_Folder = $args[0].ToLower()
 
 $Search_ContentRegex = ('invalid', 'wrong')
 $Search_FilesRegex = ('\.invalid$', '\.valid$', '^(\\case 7.*\\).*(\.txt)$')
 $Search_ExcludeFiles = ('\.eot$', '\.woff$', '\.xpi$','\.ttf$','\.chm$', '\.exe$', '\.dll$', '\.gif$', '\.png$', '\.jpg$', '\.jpeg$', '\.nupkg$', '\.nuspec$', '\\jquery\.globalize\\cultures\\globalize\.culture\..*\.js$', '\\jquery\.globalize\\cultures\\globalize\.cultures\.js$')
 
-$Result_Template = ((Split-Path $MyInvocation.MyCommand.Path) + '\Common\result_template.html')
-$Result_File = ((Split-Path $MyInvocation.MyCommand.Path) + '\result.html')
+[String]$Result_Template = ((Split-Path $MyInvocation.MyCommand.Path) + '\Common\result_template.html')
+[String]$Result_File = ((Split-Path $MyInvocation.MyCommand.Path) + '\result.html')
 
 Add-Type -Language CSharp @"
 	public class PackageCheckResult
@@ -18,12 +18,11 @@ Add-Type -Language CSharp @"
 "@;
 
 # Preparing express regex patterns
-$Search_ContentRegex_Common = '(?>' + ($Search_ContentRegex -join '|') + ')'
-$Search_FilesRegex_Common = '(?>' + ($Search_FilesRegex -join '|') + ')'
-$Search_ExcludeFiles_Common = '(?>' + ($Search_ExcludeFiles -join '|') + ')'
+[String]$Search_ContentRegex_Common = '(?>' + ($Search_ContentRegex -join '|') + ')'
+[String]$Search_FilesRegex_Common = '(?>' + ($Search_FilesRegex -join '|') + ')'
+[String]$Search_ExcludeFiles_Common = '(?>' + ($Search_ExcludeFiles -join '|') + ')'
 
 # Filling files array
-$Search_Folder = $Search_Folder.ToLower()
 $TargetFiles = @{}
 Get-ChildItem $Search_Folder -Force -Recurse | ?{ !$_.PSIsContainer } | ForEach-Object {
 	$fullName = $_.FullName.ToLower()
