@@ -1,11 +1,11 @@
-[String]$Search_Folder = $args[0].ToLower()
+[string]$Search_Folder = $args[0].ToLower()
 
 $Search_ContentRegex = ('invalid', 'wrong')
 $Search_FilesRegex = ('\.invalid$', '\.valid$', '^(\\case 7.*\\).*(\.txt)$')
 $Search_ExcludeFiles = ('\.eot$', '\.woff$', '\.xpi$','\.ttf$','\.chm$', '\.exe$', '\.dll$', '\.gif$', '\.png$', '\.jpg$', '\.jpeg$', '\.nupkg$', '\.nuspec$', '\\jquery\.globalize\\cultures\\globalize\.culture\..*\.js$', '\\jquery\.globalize\\cultures\\globalize\.cultures\.js$')
 
-[String]$Result_Template = ((Split-Path $MyInvocation.MyCommand.Path) + '\Common\result_template.html')
-[String]$Result_File = ((Split-Path $MyInvocation.MyCommand.Path) + '\result.html')
+[string]$Result_Template = ((Split-Path $MyInvocation.MyCommand.Path) + '\Common\result_template.html')
+[string]$Result_File = ((Split-Path $MyInvocation.MyCommand.Path) + '\result.html')
 
 Add-Type -Language CSharp @"
 	public class PackageCheckResult
@@ -18,9 +18,9 @@ Add-Type -Language CSharp @"
 "@;
 
 # Preparing express regex patterns
-[String]$Search_ContentRegex_Common = '(?>' + ($Search_ContentRegex -join '|') + ')'
-[String]$Search_FilesRegex_Common = '(?>' + ($Search_FilesRegex -join '|') + ')'
-[String]$Search_ExcludeFiles_Common = '(?>' + ($Search_ExcludeFiles -join '|') + ')'
+[string]$Search_ContentRegex_Common = '(?>' + ($Search_ContentRegex -join '|') + ')'
+[string]$Search_FilesRegex_Common = '(?>' + ($Search_FilesRegex -join '|') + ')'
+[string]$Search_ExcludeFiles_Common = '(?>' + ($Search_ExcludeFiles -join '|') + ')'
 
 # Filling files array
 $TargetFiles = @{}
@@ -43,7 +43,7 @@ $Result_FileExtensions = @{}
 Write-Host 'Express file extensions check... ' -nonewline
 $Express_FileExtensions = $TargetFiles.GetEnumerator() | Where-Object { $_.Key -match $Search_FilesRegex_Common } | Select -uniq -ExpandProperty Key
 if ($Express_FileExtensions) {
-	Write-Host ($Express_FileExtensions.Length.ToString() + ' File(s)')
+	Write-Host ("$($Express_FileExtensions.Length) File(s)")
 	Write-Host 'Full file extensions check...'
 	ForEach ($token in $Search_FilesRegex) {
 		$Express_FileExtensions | Where-Object { $_ -match $token } | ForEach-Object {
@@ -61,7 +61,7 @@ $Result_FileNames = @{}
 Write-Host 'Express file names check... ' -nonewline
 $Express_FileNames = $TargetFiles.GetEnumerator() | Where-Object { $_.Key -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key
 if ($Express_FileNames) {
-	Write-Host ($Express_FileNames.Length.ToString() + ' File(s)')
+	Write-Host ("$($Express_FileNames.Length) File(s)")
 	Write-Host 'Full file names check...'
 	ForEach ($token in $Search_ContentRegex) {
 		$Express_FileNames | Where-Object { $_ -match $token } | ForEach-Object {
@@ -79,7 +79,7 @@ $Result_FileContent = @{}
 Write-Host 'Express file content check... ' -nonewline
 $Express_FileContent = $TargetFiles.GetEnumerator() | Where-Object { (Get-Content -Path $_.Value) -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key
 if ($Express_FileContent) {
-	Write-Host ($Express_FileContent.Length.ToString() + ' File(s)')
+	Write-Host ("$($Express_FileContent.Length) File(s)")
 	Write-Host 'Full file content check...'
 	ForEach ($token in $Search_ContentRegex) {
 		$Express_FileContent | ForEach-Object {
@@ -106,20 +106,20 @@ if ($Express_FileContent) {
 # Creating result
 Copy-Item $Result_Template $Result_File
 # Printing files extensions
-$TextFileExtension = ''
+[string]$TextFileExtension = ''
 if ($Search_FilesRegex)
 {
 	$Search_FilesRegex | ForEach-Object {
 		if ($Result_FileExtensions.ContainsKey($_)) {
-			$TextFileExtension += ('<div class="pattern error">' + $_ + '</div>')
+			$TextFileExtension += ("<div class='pattern error'>$_</div>")
 		}
 		else {
-			$TextFileExtension += ('<div class="pattern clean">' + $_ + '</div>')
+			$TextFileExtension += ("<div class='pattern clean'>$_</div>")
 		}
 	}
 }
 	
-$TextFileExtensionResults = ''
+[string]$TextFileExtensionResults = ''
 if ($Result_FileExtensions.GetEnumerator().Length -ne 0)
 {
 	$Result_FileExtensions.GetEnumerator() | ForEach-Object {
@@ -128,30 +128,30 @@ if ($Result_FileExtensions.GetEnumerator().Length -ne 0)
 
 		ForEach ($fileName in $value){
 			$match = ([regex]$key).Matches($filename) | Select -uniq | Foreach {
-				$fileName = $fileName.replace($_, ('<span class="match error">' + $_ + '</span>'))
+				$fileName = $fileName.replace($_, ("<span class='match error'>$_</span>"))
 			}
-			$TextFileExtensionResults += ('<p>' + $fileName + '</p>')
+			$TextFileExtensionResults += ("<p>$fileName</p>")
 		}
 	}
 
-	if ($TextFileExtensionResults -ne '') { $TextFileExtensionResults = ('<div class="result-list">' + $TextFileExtensionResults + '</div>') }
+	if ($TextFileExtensionResults -ne '') { $TextFileExtensionResults = ("<div class='result-list'>$TextFileExtensionResults</div>") }
 }
 
 # Printing files names
-$TextDeniedContent = ''
+[string]$TextDeniedContent = ''
 if ($Search_ContentRegex)
 {
 	$Search_ContentRegex | ForEach-Object {
 		if ($Result_FileNames.ContainsKey($_) -or $Result_FileContent.ContainsKey($_)) {
-			$TextDeniedContent += ('<div class="pattern error">' + $_ + '</div>')
+			$TextDeniedContent += ("<div class='pattern error'>$_</div>")
 		}
 		else {
-			$TextDeniedContent += ('<div class="pattern clean">' + $_ + '</div>')
+			$TextDeniedContent += ("<div class='pattern clean'>$_</div>")
 		}
 	}
 }
 
-$TextFileNameResult = ''
+[string]$TextFileNameResult = ''
 if ($Result_FileNames.GetEnumerator().Length -ne 0)
 {
 	$Result_FileNames.GetEnumerator() | ForEach-Object {
@@ -160,16 +160,16 @@ if ($Result_FileNames.GetEnumerator().Length -ne 0)
 		
 		ForEach ($fileName in $value){
 			$match = ([regex]$key).Matches($filename) | Select -uniq | Foreach {
-				$fileName = $fileName.replace($_, ('<span class="match error">' + $_ + '</span>'))
+				$fileName = $fileName.replace($_, ("<span class='match error'>$_</span>"))
 			}
-			$TextFileNameResult += ('<p>' + $fileName + '</p>')
+			$TextFileNameResult += ("<p>$fileName</p>")
 		}
 	}
 
-	if ($TextFileNameResult -ne '') { $TextFileNameResult = ('<div class="result-list">' + $TextFileNameResult + '</div>') }
+	if ($TextFileNameResult -ne '') { $TextFileNameResult = ("<div class='result-list'>$TextFileNameResult</div>") }
 }
 
-$TextFileContentResult = ''
+[string]$TextFileContentResult = ''
 if ($Result_FileContent.GetEnumerator().Length -ne 0)
 {
 	$Result_FileContent.GetEnumerator() | ForEach-Object {
@@ -178,20 +178,20 @@ if ($Result_FileContent.GetEnumerator().Length -ne 0)
 		
 		if ($obj.Length -ne 0)
 		{
-			$TextFileContentResult += ('<div class="pattern error">' + $token + '</div>')
+			$TextFileContentResult += ("<div class='pattern error'>$token</div>")
 		
 			$obj | ForEach-Object {	
 				$TextFileContentResult += '<div class="result-list-wrapper"><table class="result-list">'
-				$TextFileContentResult += ('<tr><th colspan="2">' + $_.FileName + '</th></tr>')
+				$TextFileContentResult += ("<tr><th colspan='2'>$($_.FileName)</th></tr>")
 				
 				for ($i = 0; $i -le $_.LinesNumbers.Length - 1; $i++) {
 					$content = $_.LinesContent[$i]
 
 					$_.LinesMatch | Foreach {
-						$content = $content.replace($_, ('<span class="match error">' + $_ + '</span>'))
+						$content = $content.replace($_, ("<span class='match error'>$_</span>"))
 					}
 
-					$TextFileContentResult += ('<tr><td><div>' + $_.LinesNumbers[$i] + '</div></td><td>' + $content + '</td></tr>')
+					$TextFileContentResult += ("<tr><td><div>$($_.LinesNumbers[$i])</div></td><td>$content</td></tr>")
 				}
 
 				$TextFileContentResult += '</table></div>'
@@ -200,7 +200,7 @@ if ($Result_FileContent.GetEnumerator().Length -ne 0)
 	}
 }
 
-$cleanText = '<span class="match clean">Everything is clean</span>'
+[string]$cleanText = '<span class="match clean">Everything is clean</span>'
 
 if ($TextFileExtension -eq '') { $TextFileExtension = 'None' }
 if ($TextFileExtensionResults -eq '') { $TextFileExtensionResults = $cleanText }
