@@ -1,8 +1,16 @@
-[string]$Search_Folder = $args[0].ToLower()
+param(
+	[Parameter(Mandatory=$true)]
+	[string]$TargetPath,
+	[string]$DeniedContentPath = '.\denied content.conf',
+	[string]$DeniedFilesPath = '.\denied files.conf',
+	[string]$ExcludeFilesPath = '.\exclude files.conf'
+)
 
-$Search_ContentRegex = ('invalid', 'wrong')
-$Search_FilesRegex = ('\.invalid$', '\.valid$', '^(\\case 7.*\\).*(\.txt)$')
-$Search_ExcludeFiles = ('\.eot$', '\.woff$', '\.xpi$','\.ttf$','\.chm$', '\.exe$', '\.dll$', '\.gif$', '\.png$', '\.jpg$', '\.jpeg$', '\.nupkg$', '\.nuspec$', '\\jquery\.globalize\\cultures\\globalize\.culture\..*\.js$', '\\jquery\.globalize\\cultures\\globalize\.cultures\.js$')
+Add-Type -AssemblyName System.Web
+
+$Search_ContentRegex = Get-Content $DeniedContentPath
+$Search_FilesRegex = Get-Content $DeniedFilesPath
+$Search_ExcludeFiles = Get-Content $ExcludeFilesPath
 
 [string]$Result_Template = ((Split-Path $MyInvocation.MyCommand.Path) + '\Common\result_template.html')
 [string]$Result_File = ((Split-Path $MyInvocation.MyCommand.Path) + '\result.html')
@@ -24,10 +32,10 @@ Add-Type -Language CSharp @"
 
 # Filling files array
 $TargetFiles = @{}
-Get-ChildItem $Search_Folder -Force -Recurse | ?{ !$_.PSIsContainer } | ForEach-Object {
+Get-ChildItem $TargetPath -Force -Recurse | ?{ !$_.PSIsContainer } | ForEach-Object {
 	$fullName = $_.FullName.ToLower()
 	if ($_.FullName -notmatch $Search_ExcludeFiles_Common) {
-		$key = $fullName.replace($Search_Folder, '\');
+		$key = $fullName.replace($TargetPath, '\');
 		$TargetFiles[$key] = $fullName
 	}
 }
@@ -185,7 +193,7 @@ if ($Result_FileContent.GetEnumerator().Length -ne 0)
 				$TextFileContentResult += ("<tr><th colspan='2'>$($_.FileName)</th></tr>")
 				
 				for ($i = 0; $i -le $_.LinesNumbers.Length - 1; $i++) {
-					$content = $_.LinesContent[$i]
+					$content = [System.Web.HttpUtility]::HtmlEncode($_.LinesContent[$i])
 
 					$_.LinesMatch | Foreach {
 						$content = $content.replace($_, ("<span class='match error'>$_</span>"))
