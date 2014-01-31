@@ -8,29 +8,21 @@ param(
 
 Add-Type -AssemblyName System.Web
 
+# preparing environment variables
 [string[]]$Search_ContentRegex = Get-Content $DeniedContentPath
 [string[]]$Search_FilesRegex = Get-Content $DeniedFilesPath
 [string[]]$Search_ExcludeFiles = Get-Content $ExcludeFilesPath
 
 [string]$Result_Template = ((Split-Path $MyInvocation.MyCommand.Path) + '\Common\result_template.html')
 [string]$Result_File = ((Split-Path $MyInvocation.MyCommand.Path) + '\result.html')
-
-Add-Type -Language CSharp @"
-	public class PackageCheckResult
-	{
-		public string FileName;
-		public int[] LinesNumbers;
-		public string[] LinesContent;
-		public string[] LinesMatch;
-	}
-"@;
+$ResultObjectDefinition = @{ FileName = ''; LinesNumbers = @(); LinesContent = @(); LinesMatch = @(); }
 
 # Preparing express regex patterns
 [string]$Search_ContentRegex_Common = '(?>' + ($Search_ContentRegex -join '|') + ')'
 [string]$Search_FilesRegex_Common = '(?>' + ($Search_FilesRegex -join '|') + ')'
 [string]$Search_ExcludeFiles_Common = '(?>' + ($Search_ExcludeFiles -join '|') + ')'
 
-# Filling files array
+# Filling target items array
 $AllItemsFiles = @{}
 $ContentFiles = @{}
 Get-ChildItem $TargetPath -Force -Recurse | ForEach-Object {
@@ -49,50 +41,40 @@ Write-Verbose "Content files: $($ContentFiles.Count)"
 #
 # Checking files extensions
 $Result_FileExtensions = @{}
-Write-Host 'Express file extensions check... ' -nonewline
+Write-Output 'File extensions check... '
 $Express_FileExtensions = $AllItemsFiles.GetEnumerator() | Where-Object { $_.Key -match $Search_FilesRegex_Common } | Select -uniq -ExpandProperty Key
 if ($Express_FileExtensions) {
-	Write-Host ("$($Express_FileExtensions.Length) File(s)")
-	Write-Host 'Full file extensions check...'
 	ForEach ($token in $Search_FilesRegex) {
 		$Express_FileExtensions | Where-Object { $_ -match $token } | ForEach-Object {
 			if (-not $Result_FileExtensions.ContainsKey($token)) { $Result_FileExtensions[$token] = @() }
 			$Result_FileExtensions[$token] += $_
 		}
 	}
-} else {
-	Write-Host '0 File(s)'
 }
 
 #
 # Checking files names
 $Result_FileNames = @{}
-Write-Host 'Express file names check... ' -nonewline
+Write-Output 'File names check... '
 $Express_FileNames = $AllItemsFiles.GetEnumerator() | Where-Object { $_.Key -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key
 if ($Express_FileNames) {
-	Write-Host ("$($Express_FileNames.Length) File(s)")
-	Write-Host 'Full file names check...'
 	ForEach ($token in $Search_ContentRegex) {
 		$Express_FileNames | Where-Object { $_ -match $token } | ForEach-Object {
 			if (-not $Result_FileNames.ContainsKey($token)) { $Result_FileNames[$token] = @() }
 			$Result_FileNames[$token] += $_
 		}
 	}
-} else {
-	Write-Host '0 File(s)'
 }
 
 #
 # Checking files content
 $Result_FileContent = @{}
-Write-Host 'Express file content check... ' -nonewline
+Write-Output 'File content check... '
 $Express_FileContent = $ContentFiles.GetEnumerator() | Where-Object { (Get-Content -Path $_.Value) -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key
 if ($Express_FileContent) {
-	Write-Host ("$($Express_FileContent.Length) File(s)")
-	Write-Host 'Full file content check...'
 	ForEach ($token in $Search_ContentRegex) {
 		$Express_FileContent | ForEach-Object {
-			$resultObj = New-Object PackageCheckResult
+			$resultObj = New-Object PSObject -Property $ResultObjectDefinition
 			$matches = Select-String -Path $ContentFiles[$_] -Pattern $token -AllMatches | Foreach {
 				$resultObj.LinesNumbers += $_.LineNumber
 				$resultObj.LinesContent += $_.Line
@@ -108,8 +90,6 @@ if ($Express_FileContent) {
 			}
 		}
 	}
-} else {
-	Write-Host '0 File(s)'
 }
 
 # Creating result
@@ -119,12 +99,7 @@ Copy-Item $Result_Template $Result_File
 if ($Search_FilesRegex)
 {
 	$Search_FilesRegex | ForEach-Object {
-		if ($Result_FileExtensions.ContainsKey($_)) {
-			$TextFileExtension += ("<div class='pattern error'>$_</div>")
-		}
-		else {
-			$TextFileExtension += ("<div class='pattern clean'>$_</div>")
-		}
+		$TextFileExtension += if ($Result_FileExtensions.ContainsKey($_)) { "<div class='pattern error'>$_</div>" }	else { "<div class='pattern clean'>$_</div>" }
 	}
 }
 	
@@ -151,12 +126,7 @@ if ($Result_FileExtensions.GetEnumerator().Length -ne 0)
 if ($Search_ContentRegex)
 {
 	$Search_ContentRegex | ForEach-Object {
-		if ($Result_FileNames.ContainsKey($_) -or $Result_FileContent.ContainsKey($_)) {
-			$TextDeniedContent += ("<div class='pattern error'>$_</div>")
-		}
-		else {
-			$TextDeniedContent += ("<div class='pattern clean'>$_</div>")
-		}
+        $TextDeniedContent += if ($Result_FileNames.ContainsKey($_) -or $Result_FileContent.ContainsKey($_)) { "<div class='pattern error'>$_</div>" }	else { "<div class='pattern clean'>$_</div>" }
 	}
 }
 
