@@ -9,6 +9,7 @@ param(
 Add-Type -AssemblyName System.Web
 
 # preparing environment variables
+$TargetPath = $TargetPath.ToLower()
 [string[]]$Search_ContentRegex = Get-Content $DeniedContentPath
 [string[]]$Search_FilesRegex = Get-Content $DeniedFilesPath
 [string[]]$Search_ExcludeFiles = Get-Content $ExcludeFilesPath
