@@ -14,7 +14,7 @@ $TargetPath = $TargetPath.ToLower()
 [string[]]$Search_FilesRegex = Get-Content $DeniedFilesPath
 [string[]]$Search_ExcludeFiles = Get-Content $ExcludeFilesPath
 
-[string]$Result_Template = ((Split-Path $MyInvocation.MyCommand.Path) + '\Common\result_template.html')
+[string]$Result_Template = ((Split-Path $MyInvocation.MyCommand.Path) + '\result_template.html')
 [string]$Result_File = ((Split-Path $MyInvocation.MyCommand.Path) + '\result.html')
 $ResultObjectDefinition = @{ FileName = ''; LinesNumbers = @(); LinesContent = @(); LinesMatch = @(); }
 
