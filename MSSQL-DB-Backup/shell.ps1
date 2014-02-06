@@ -1,12 +1,11 @@
-[String]$DB_SearchPattern = 'DB'
+[string]$DB_SearchPattern = 'DB'
 
-[String]$DB_BackupName = 'db'
-[String]$DB_BackupPrefix = 'db'
+[string]$DB_BackupName = 'backup'
 
-[String]$DB_ServerAddress = 'localhost'
-[String]$DB_ServerBackupFolder = 'C:\Downloads\'
-[String]$DB_ServerEthernetFolder = 'C:\Downloads\'
-[String]$DB_LocalBackupFolder = ((Split-Path $MyInvocation.MyCommand.Path) + '\backups')
+[string]$DB_ServerAddress = 'localhost'
+[string]$DB_ServerBackupFolder = 'C:\Downloads\'
+[string]$DB_ServerEthernetFolder = 'C:\Downloads\'
+[string]$DB_LocalBackupFolder = ((Split-Path $MyInvocation.MyCommand.Path) + '\backups')
 
 Add-PSSnapin SqlServerCmdletSnapin100
 Add-PSSnapin SqlServerProviderSnapin100
@@ -16,35 +15,39 @@ New-Item -ItemType Directory -Force -Path $DB_LocalBackupFolder
 Clear-Host
 
 # Scan target database
-echo 'Avaiting server response...'
-$DB_Result = Invoke-Sqlcmd -ServerInstance $DB_ServerAddress -Query ('SELECT name FROM sys.databases WHERE name LIKE ''%' + $DB_SearchPattern + '%''')
+Write-Output 'Avaiting server response...'
+
+[string]$proc_query_search = "SELECT name FROM sys.databases WHERE name LIKE '%$DB_SearchPattern%'"
+Write-Verbose $proc_query_search
+$DB_Result = Invoke-Sqlcmd -ServerInstance $DB_ServerAddress -Query $proc_query_search
+
 Clear-Host
 
 # Print scan results
-echo 'Available targets:'
+Write-Output 'Available targets:'
 foreach($result in $DB_Result)
 {
-	$str = '  ' + ([array]::IndexOf($DB_Result, $result)) + ': ' + ($result['name'])
-	echo ($str)
+	$str = "$([array]::IndexOf($DB_Result, $result)): $($result['name'])"
+	Write-Output $str
 }
 
 # Read user input
-echo ''
+Write-Output ''
 [int]$DB_Selected = Read-Host "Select target database"
 [string]$DB_BackupSuffix = Read-Host "Print backup suffix (optional)"
-echo ''
+Write-Output ''
 
 # Backup
-[String]$backupFileName = $DB_BackupPrefix
-if ($DB_BackupSuffix) { 
-	$backupFileName = $backupFileName + '_' + $DB_BackupSuffix
-}
-$backupFileName = $backupFileName + '_' + (Get-Date -format "ddMMyyyy")  + '.bak'
+[string]$backupDate = (Get-Date -format "ddMMyyyy")
+[string[]]$backupNameParts = @($DB_BackupName, $DB_BackupSuffix, $backupDate) | Where { $_ -ne '' }
+[string]$backupFileName = $backupNameParts -join '_'
 
-echo 'Creating backup...'
-[String]$backupQuery = ('BACKUP DATABASE [' + $DB_Result[$DB_Selected]['name'] + '] TO DISK = N''' + ($DB_ServerBackupFolder + $backupFileName) + ''' WITH NOFORMAT, INIT, NAME = N''' + $DB_BackupName + ''', SKIP, NOREWIND, NOUNLOAD, STATS = 10')
+
+Write-Output 'Creating backup...'
+[string]$backupQuery = ('BACKUP DATABASE [' + $DB_Result[$DB_Selected]['name'] + '] TO DISK = N''' + ($DB_ServerBackupFolder + $backupFileName) + ''' WITH NOFORMAT, INIT, NAME = N''' + $DB_BackupName + ''', SKIP, NOREWIND, NOUNLOAD, STATS = 10')
+Write-Verbose $backupQuery
 Invoke-Sqlcmd -ServerInstance $DB_ServerAddress -Query $backupQuery
 
 # Move
-echo 'Moving backup...'
+Write-Output 'Moving backup...'
 Move-Item ($DB_ServerEthernetFolder + $backupFileName) $DB_LocalBackupFolder -force
