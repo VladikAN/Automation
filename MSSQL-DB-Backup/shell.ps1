@@ -2,7 +2,7 @@
 
 [string]$DB_BackupName = 'backup'
 
-[string]$DB_ServerAddress = 'localhost'
+[string]$DB_SQLServerAddress = 'localhost'
 [string]$DB_ServerBackupFolder = 'C:\Downloads\'
 [string]$DB_ServerEthernetFolder = 'C:\Downloads\'
 [string]$DB_LocalBackupFolder = ((Split-Path $MyInvocation.MyCommand.Path) + '\backups')
@@ -16,19 +16,16 @@ Clear-Host
 
 # Scan target database
 Write-Output 'Avaiting server response...'
-
 [string]$proc_query_search = "SELECT name FROM sys.databases WHERE name LIKE '%$DB_SearchPattern%'"
 Write-Verbose $proc_query_search
-$DB_Result = Invoke-Sqlcmd -ServerInstance $DB_ServerAddress -Query $proc_query_search
-
+$DB_Result = Invoke-Sqlcmd -ServerInstance $DB_SQLServerAddress -Query $proc_query_search
 Clear-Host
 
 # Print scan results
 Write-Output 'Available targets:'
 foreach($result in $DB_Result)
 {
-	$str = "$([array]::IndexOf($DB_Result, $result)): $($result['name'])"
-	Write-Output $str
+	Write-Output "$([array]::IndexOf($DB_Result, $result)): $($result['name'])"
 }
 
 # Read user input
@@ -44,9 +41,9 @@ Write-Output ''
 
 
 Write-Output 'Creating backup...'
-[string]$backupQuery = ('BACKUP DATABASE [' + $DB_Result[$DB_Selected]['name'] + '] TO DISK = N''' + ($DB_ServerBackupFolder + $backupFileName) + ''' WITH NOFORMAT, INIT, NAME = N''' + $DB_BackupName + ''', SKIP, NOREWIND, NOUNLOAD, STATS = 10')
-Write-Verbose $backupQuery
-Invoke-Sqlcmd -ServerInstance $DB_ServerAddress -Query $backupQuery
+[string]$proc_backup_query = ('BACKUP DATABASE [' + $DB_Result[$DB_Selected]['name'] + '] TO DISK = N''' + ($DB_ServerBackupFolder + $backupFileName) + ''' WITH NOFORMAT, INIT, NAME = N''' + $DB_BackupName + ''', SKIP, NOREWIND, NOUNLOAD, STATS = 10')
+Write-Verbose $proc_backup_query
+Invoke-Sqlcmd -ServerInstance $DB_SQLServerAddress -Query $proc_backup_query
 
 # Move
 Write-Output 'Moving backup...'
