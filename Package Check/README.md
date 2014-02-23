@@ -1,0 +1,2 @@
+Sometimes I need to prepare software package (ex. source files) and this package must be clear from any relation to me. This powershell script do magic and checks specified folder for some unexpected content. As result script will create 'result.html' with check summary.
+Try run.ps1, by default it configured to .\Tests folder
