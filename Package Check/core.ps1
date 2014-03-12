@@ -195,7 +195,7 @@ function Check-Directory
 			}
 		}
 
-		[string]$cleanText = '<span class="match clean">Everything is clean</span>'
+		[string]$cleanText = '<span class="match clean">Everything is good</span>'
 
 		if ($TextFileExtension -eq '') { $TextFileExtension = 'None' }
 		if ($TextFileExtensionResults -eq '') { $TextFileExtensionResults = $cleanText }
