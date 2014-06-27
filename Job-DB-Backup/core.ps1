@@ -24,9 +24,10 @@ function Job-DB-Backup
         Add-PSSnapin SqlServerProviderSnapin100
 
         $raw_db_name = ((@($DB_Backup_Prefix, $DB_Name, $DB_Backup_Suffix) | Where-Object { $_ -ne $null }) -join '_').ToString().ToLower()
-        $raw_db_date = (Get-Date -format "ddMMyyyy_HHmm")
+        $raw_db_date = (Get-Date -format "ddMMyyyy_HHmmss")
 
-        $raw_db_name_regex = "$($raw_db_name).*?\.bak"
+        $raw_files_regex = "$($raw_db_name).*?\.bak"
+        $raw_files_backups = Get-Childitem $DB_Backup_Location | Where-Object { $_.Name -match $raw_files_regex } | Sort-Object LastWriteTime | Select -ExpandProperty Name
 	}
 
 	process
