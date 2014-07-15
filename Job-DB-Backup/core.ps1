@@ -28,7 +28,7 @@ function Job-DB-Backup
 
         Write-Output "Locating existed backups ..."
         $raw_files_regex = "$($raw_db_name).*?\.bak"
-        $raw_files_backups = Get-Childitem $DB_Backup_Location | Where-Object { $_.Name -match $raw_files_regex } | Sort-Object LastWriteTime | Select -ExpandProperty Name
+        $raw_files_backups = @(Get-Childitem $DB_Backup_Location | Where-Object { $_.Name -match $raw_files_regex } | Sort-Object LastWriteTime | Select -ExpandProperty Name)
         if ($raw_files_backups.length -ge $DB_Backup_StoreCount)
         {
             $raw_files_count = $raw_files_backups.length - $DB_Backup_StoreCount
