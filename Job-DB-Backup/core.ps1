@@ -3,10 +3,10 @@ function Job-DB-Backup
 	[CmdletBinding()]
 	param(
         [Parameter(Mandatory=$true)]
-        [string]$DB_Server = 'AURUM\SQLEXPRESS',
+        [string]$DB_Server = 'localhost\SQLEXPRESS',
 
         [Parameter(Mandatory=$true)]
-        [string]$DB_Name = 'Car Services',
+        [string]$DB_Name = 'Database',
 
         [Parameter(Mandatory=$true)]
         [string]$DB_Backup_Location = 'c:\downloads\',
@@ -31,9 +31,9 @@ function Job-DB-Backup
         $raw_files_backups = Get-Childitem $DB_Backup_Location | Where-Object { $_.Name -match $raw_files_regex } | Sort-Object LastWriteTime | Select -ExpandProperty Name
         if ($raw_files_backups.length -ge $DB_Backup_StoreCount)
         {
-            $raf_files_count = $raw_files_backups.length - $DB_Backup_StoreCount
-            Write-Output "Preparing to remove $($raf_files_count + 1) backup(s) ..."
-            $raw_files_backups[0..$raf_files_count] | ForEach-Object {
+            $raw_files_count = $raw_files_backups.length - $DB_Backup_StoreCount
+            Write-Output "Preparing to remove $($raw_files_count + 1) backup(s) ..."
+            $raw_files_backups[0..$raw_files_count] | ForEach-Object {
                 Write-Output "Removing $($_) ..."
                 Remove-Item -Force ($DB_Backup_Location + $_)
             }
