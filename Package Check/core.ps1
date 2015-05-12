@@ -128,13 +128,11 @@ function Check-Directory
 
 				ForEach ($fileName in $value){
 					$match = ([regex]$key).Matches($filename) | Select -uniq | Foreach {
-						$fileName = $fileName.replace($_, ("<span class='match error'>$_</span>"))
+						$fileName = $fileName.replace($_, ("<mark>$_</mark>"))
 					}
 					$TextFileExtensionResults += ("<p>$fileName</p>")
 				}
 			}
-
-			if ($TextFileExtensionResults -ne '') { $TextFileExtensionResults = ("<div class='result-list'>$TextFileExtensionResults</div>") }
 		}
 
 		# Printing files names
@@ -155,15 +153,14 @@ function Check-Directory
 				
 				ForEach ($fileName in $value){
 					$match = ([regex]$key).Matches($filename) | Select -uniq | Foreach {
-						$fileName = $fileName.replace($_, ("<span class='match error'>$_</span>"))
+						$fileName = $fileName.replace($_, ("<mark>$_</mark>"))
 					}
 					$TextFileNameResult += ("<p>$fileName</p>")
 				}
 			}
-
-			if ($TextFileNameResult -ne '') { $TextFileNameResult = ("<div class='result-list'>$TextFileNameResult</div>") }
 		}
 
+		# Printing content results
 		[string]$TextFileContentResult = ''
 		if ($Result_FileContent.GetEnumerator().Length -ne 0)
 		{
@@ -183,7 +180,7 @@ function Check-Directory
 							$content = [System.Web.HttpUtility]::HtmlEncode($_.LinesContent[$i])
 
 							$_.LinesMatch | Foreach {
-								$content = $content.replace($_, ("<span class='match error'>$_</span>"))
+								$content = $content.replace($_, ("<mark>$_</mark>"))
 							}
 
 							$TextFileContentResult += ("<tr><td><div>$($_.LinesNumbers[$i])</div></td><td>$content</td></tr>")
@@ -195,7 +192,7 @@ function Check-Directory
 			}
 		}
 
-		[string]$cleanText = '<span class="match clean">Everything is good</span>'
+		[string]$cleanText = '<b>Everything is good</b>'
 
 		if ($TextFileExtension -eq '') { $TextFileExtension = 'None' }
 		if ($TextFileExtensionResults -eq '') { $TextFileExtensionResults = $cleanText }
