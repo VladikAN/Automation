@@ -31,9 +31,9 @@ function Check-Directory
 		$ResultObjectDefinition = @{ FileName = ''; LinesNumbers = @(); LinesContent = @(); LinesMatch = @(); }
 
 		# Preparing express regex patterns
-		[string]$Search_ContentRegex_Common = '(?>' + ($Search_ContentRegex -join '|') + ')'
-		[string]$Search_FilesRegex_Common = '(?>' + ($Search_FilesRegex -join '|') + ')'
-		[string]$Search_ExcludeFiles_Common = '(?>' + ($Search_ExcludeFiles -join '|') + ')'
+		[string]$Search_ContentRegex_Common = '(?>' + (($Search_ContentRegex | ForEach-Object { @("({0})" -f $_) }) -join '|') + ')'
+		[string]$Search_FilesRegex_Common = '(?>' + (($Search_FilesRegex | ForEach-Object { @("({0})" -f $_) }) -join '|') + ')'
+		[string]$Search_ExcludeFiles_Common = '(?>' + (($Search_ExcludeFiles | ForEach-Object { @("({0})" -f $_) }) -join '|') + ')'
 
 		# Filling target items array
 		$AllItemsFiles = @{}
