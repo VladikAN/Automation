@@ -3,72 +3,53 @@
 		<style type="text/css">
 			body { background-color: #e2e2e2; font-family: Consolas; font-size: 12px; margin: 0; }
 			p { margin: 2px 0; }
+			hr { width: 100px; margin: 12px auto; background-color: #e2e2e2; color: red; border: none; height: 1px; }
+			mark { background-color: #ffdddd; }
 
 			h1, h2 { clear: both; color: #777; text-decoration: none; text-shadow: 0px 1px 0 #ccc; margin: 8px 0; padding: 2px 5px; }
-			h1 { background-color: #e0e0e0; font-size: 24px; }
-			h2 { background-color: #f0f0f0; font-size: 16px; }
+			h1 { font-size: 24px; }
+			h2 { font-size: 16px; }
 			
-			#content {
-				background-color: #fff;
-				box-shadow: 0 0 14px 1px rgba(0,0,0,0.2);
-				border-left: 1px solid #777;
-				border-right: 1px solid #777;
-				width: 1024px;
-				margin: 0 auto;
-				padding: 8px 20px 20px 20px;
-			}
+			#content { background-color: #fff; box-shadow: 0 0 14px 1px #555; border: 1px solid #777; width: 80%; margin: 0 auto; padding: 8px; }
 			
-			div.pattern {
-				border: 1px solid #777;
-				border-radius: 2px;
-				box-shadow: 0px 1px 0 #ccc;
-				display: inline-block;
-				font-size: 12px;
-				margin: 0 10px 2px 0;
-				padding: 2px 5px;
-			}
+			div.pattern { background-color: #ddffdd; border: 1px solid #777; border-radius: 2px; box-shadow: 0px 1px 0 #ccc; display: inline-block; font-size: 12px; margin: 0 10px 2px 0; padding: 2px 5px; }
+			div.pattern.valid { background-color: #ddffdd; }
+			div.pattern.invalid { background-color: #ffdddd; }
 
-			div.pattern.clean, span.match.clean { background-color: #ddffdd; }
-			div.pattern.error, span.match.error { background-color: #ffdddd; }
+			div.file-table-wrapper { overflow-x: auto; overflow-y: none; margin: 10px 0; width: 100%; }
+			table.file-table { border-spacing: 0; border-collapse: collapse; width: 100%; }
 
-			div.result-list-wrapper { overflow-x: auto; overflow-y: none; margin: 10px 0; width: 100%; }
-			
-			table.result-list { border-spacing: 0; border-collapse: collapse; width: 100%; }
-			table.result-list tr th, table.result-list tr td { font-size: 12px; }
-			table.result-list tr th {
-				background-color: #eaeaea;
-				background-image: -moz-linear-gradient(#fafafa, #eaeaea);
-				background-image: -webkit-linear-gradient(#fafafa, #eaeaea);
-				background-image: linear-gradient(#fafafa, #eaeaea);
-				background-repeat: repeat-x;
-				border: 1px solid #d8d8d8;
-				font-weight: normal;
-				text-align: left;
-				padding: 5px;				
-			}
-
-			table.result-list tr td { border: 1px solid #e5e5e5; color: #333; }
-			table.result-list tr td:first-child, table.result-list tr td:first-child div { text-align: center; width: 40px !important; }
- 			table.result-list tr td:last-child { white-space: nowrap;; }
+			table.file-table tr th, table.file-table tr td { border: 1px solid #e5e5e5; color: #333; font-size: 12px; font-weight: normal; white-space: nowrap; }
+			table.file-table tr th { background-color: #eaeaea; text-align: left; padding: 5px; }
+			table.file-table tr td:first-child, table.file-table tr td:first-child div { text-align: center; width: 30px !important; }
 		</style>
 	</head>
 	
 	<body>
 		<div id='content'>
 			<div>
-				<h1>Denied files</h1>
+				<h1>Files</h1>
+				
+				<h2>Search patterns</h2>
 				<div>%FileExtension%</div>
-				<h2>Denied files result:</h2>
+				
+				<h2>Search result</h2>
 				<div>%FileExtensionResults%</div>
 			</div>
+			<hr />
 			<div>
-				<h1>Denied content</h1>
+				<h1>Content</h1>
+				
+				<h2>Search patterns</h2>
 				<div>%DeniedContent%</div>
-				<h2>Denied names result:</h2>
+				
+				<h2>Names search result</h2>
 				<div>%FileNameResult%</div>
-				<h2>Denied content result:</h2>
+				
+				<h2>Content search result</h2>
 				<div>%FileContentResult%</div>
 			</div>
+			<hr />
 		</div>
 	</body>
 </html>

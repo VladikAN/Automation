@@ -31,9 +31,9 @@ function Check-Directory
 		$ResultObjectDefinition = @{ FileName = ''; LinesNumbers = @(); LinesContent = @(); LinesMatch = @(); }
 
 		# Preparing express regex patterns
-		[string]$Search_ContentRegex_Common = '(?>' + ($Search_ContentRegex -join '|') + ')'
-		[string]$Search_FilesRegex_Common = '(?>' + ($Search_FilesRegex -join '|') + ')'
-		[string]$Search_ExcludeFiles_Common = '(?>' + ($Search_ExcludeFiles -join '|') + ')'
+		[string]$Search_ContentRegex_Common = '(?>' + (($Search_ContentRegex | ForEach-Object { @("({0})" -f $_) }) -join '|') + ')'
+		[string]$Search_FilesRegex_Common = '(?>' + (($Search_FilesRegex | ForEach-Object { @("({0})" -f $_) }) -join '|') + ')'
+		[string]$Search_ExcludeFiles_Common = '(?>' + (($Search_ExcludeFiles | ForEach-Object { @("({0})" -f $_) }) -join '|') + ')'
 
 		# Filling target items array
 		$AllItemsFiles = @{}
@@ -56,7 +56,7 @@ function Check-Directory
 	{
 		# Checking files extensions
 		$Result_FileExtensions = @{}
-		Write-Output 'File extensions check... '
+		Write-Output 'File extensions check...'
 		$Express_FileExtensions = $AllItemsFiles.GetEnumerator() | Where-Object { $_.Key -match $Search_FilesRegex_Common } | Select -uniq -ExpandProperty Key
 		if ($Express_FileExtensions) {
 			ForEach ($token in $Search_FilesRegex) {
@@ -69,7 +69,7 @@ function Check-Directory
 
 		# Checking files names
 		$Result_FileNames = @{}
-		Write-Output 'File names check... '
+		Write-Output 'File names check...'
 		$Express_FileNames = $AllItemsFiles.GetEnumerator() | Where-Object { $_.Key -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key
 		if ($Express_FileNames) {
 			ForEach ($token in $Search_ContentRegex) {
@@ -82,7 +82,7 @@ function Check-Directory
 
 		# Checking files content
 		$Result_FileContent = @{}
-		Write-Output 'File content check... '
+		Write-Output 'File content check...'
 		$Express_FileContent = $ContentFiles.GetEnumerator() | Where-Object { (Get-Content -Path $_.Value) -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key
 		if ($Express_FileContent) {
 			ForEach ($token in $Search_ContentRegex) {
@@ -110,13 +110,12 @@ function Check-Directory
 	{
 		# Creating result
 		Copy-Item $TemplateFileHTML $OutputFileHTML
+
 		# Printing files extensions
 		[string]$TextFileExtension = ''
 		if ($Search_FilesRegex)
 		{
-			$Search_FilesRegex | ForEach-Object {
-				$TextFileExtension += if ($Result_FileExtensions.ContainsKey($_)) { "<div class='pattern error'>$_</div>" }	else { "<div class='pattern clean'>$_</div>" }
-			}
+			$Search_FilesRegex | ForEach-Object { $TextFileExtension += @("<div class='pattern {0}'>{1}</div>" -f $(if($Result_FileExtensions.ContainsKey($_)) { "invalid" } else { "valid" }), $_) }
 		}
 			
 		[string]$TextFileExtensionResults = ''
@@ -127,23 +126,17 @@ function Check-Directory
 				$value = $_.Value
 
 				ForEach ($fileName in $value){
-					$match = ([regex]$key).Matches($filename) | Select -uniq | Foreach {
-						$fileName = $fileName.replace($_, ("<span class='match error'>$_</span>"))
-					}
+					([regex]$key).Matches($filename) | Select -uniq | Foreach { $fileName = $fileName.replace($_, ("<mark>$_</mark>")) }
 					$TextFileExtensionResults += ("<p>$fileName</p>")
 				}
 			}
-
-			if ($TextFileExtensionResults -ne '') { $TextFileExtensionResults = ("<div class='result-list'>$TextFileExtensionResults</div>") }
 		}
 
 		# Printing files names
 		[string]$TextDeniedContent = ''
 		if ($Search_ContentRegex)
 		{
-			$Search_ContentRegex | ForEach-Object {
-		        $TextDeniedContent += if ($Result_FileNames.ContainsKey($_) -or $Result_FileContent.ContainsKey($_)) { "<div class='pattern error'>$_</div>" }	else { "<div class='pattern clean'>$_</div>" }
-			}
+			$Search_ContentRegex | ForEach-Object { $TextDeniedContent += @("<div class='pattern {0}'>{1}</div>" -f $(if($Result_FileNames.ContainsKey($_) -or $Result_FileContent.ContainsKey($_)) { "invalid" } else { "valid" }), $_) }
 		}
 
 		[string]$TextFileNameResult = ''
@@ -154,16 +147,13 @@ function Check-Directory
 				$value = $_.Value
 				
 				ForEach ($fileName in $value){
-					$match = ([regex]$key).Matches($filename) | Select -uniq | Foreach {
-						$fileName = $fileName.replace($_, ("<span class='match error'>$_</span>"))
-					}
+					([regex]$key).Matches($filename) | Select -uniq | Foreach { $fileName = $fileName.replace($_, ("<mark>$_</mark>")) }
 					$TextFileNameResult += ("<p>$fileName</p>")
 				}
 			}
-
-			if ($TextFileNameResult -ne '') { $TextFileNameResult = ("<div class='result-list'>$TextFileNameResult</div>") }
 		}
 
+		# Printing content results
 		[string]$TextFileContentResult = ''
 		if ($Result_FileContent.GetEnumerator().Length -ne 0)
 		{
@@ -173,20 +163,17 @@ function Check-Directory
 				
 				if ($obj.Length -ne 0)
 				{
-					$TextFileContentResult += ("<div class='pattern error'>$token</div>")
+					$TextFileContentResult += ("<div class='pattern invalid'>$token</div>")
 				
 					$obj | ForEach-Object {	
-						$TextFileContentResult += '<div class="result-list-wrapper"><table class="result-list">'
+						$TextFileContentResult += '<div class="file-table-wrapper"><table class="file-table">'
 						$TextFileContentResult += ("<tr><th colspan='2'>$($_.FileName)</th></tr>")
 						
 						for ($i = 0; $i -le $_.LinesNumbers.Length - 1; $i++) {
 							$content = [System.Web.HttpUtility]::HtmlEncode($_.LinesContent[$i])
+							$_.LinesMatch | Foreach { $content = $content.replace($_, ("<mark>$_</mark>")) }
 
-							$_.LinesMatch | Foreach {
-								$content = $content.replace($_, ("<span class='match error'>$_</span>"))
-							}
-
-							$TextFileContentResult += ("<tr><td><div>$($_.LinesNumbers[$i])</div></td><td>$content</td></tr>")
+							$TextFileContentResult += @("<tr><td><div>{0}</div></td><td>{1}</td></tr>" -f $_.LinesNumbers[$i], $content)
 						}
 
 						$TextFileContentResult += '</table></div>'
@@ -195,7 +182,7 @@ function Check-Directory
 			}
 		}
 
-		[string]$cleanText = '<span class="match clean">Everything is good</span>'
+		[string]$cleanText = '<b>No results to display</b>'
 
 		if ($TextFileExtension -eq '') { $TextFileExtension = 'None' }
 		if ($TextFileExtensionResults -eq '') { $TextFileExtensionResults = $cleanText }
