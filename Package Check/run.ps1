@@ -1,2 +1,2 @@
 . .\core.ps1
-Check-Directory -TargetPath '[directory]\Tests\' -TemplateFileHTML '[directory]\template.html' -OutputFileHTML '[directory]\result.html'
+Check-Directory -TargetPath 'Tests\' -TemplateFileHTML 'template.html' -OutputFileHTML 'result.html'
