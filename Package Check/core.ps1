@@ -186,14 +186,14 @@ function Check-Directory
 
 		if ($TextFileExtension -eq '') { $TextFileExtension = 'None' }
 		if ($TextFileExtensionResults -eq '') { $TextFileExtensionResults = $cleanText }
-		(Get-Content $OutputFileHTML) | ForEach-Object { $_ -replace "%FileExtension%", ($TextFileExtension) } | Set-Content $OutputFileHTML
-		(Get-Content $OutputFileHTML) | ForEach-Object { $_ -replace "%FileExtensionResults%", ($TextFileExtensionResults) } | Set-Content $OutputFileHTML
+		(Get-Content $OutputFileHTML) | ForEach-Object { $_ -replace "%FileExtension%", ($TextFileExtension) } | Set-Content -Encoding UTF8 $OutputFileHTML
+		(Get-Content $OutputFileHTML) | ForEach-Object { $_ -replace "%FileExtensionResults%", ($TextFileExtensionResults) } | Set-Content -Encoding UTF8 $OutputFileHTML
 
 		if ($TextDeniedContent -eq '') { $TextDeniedContent = 'None' }
 		if ($TextFileNameResult -eq '') { $TextFileNameResult = $cleanText }
 		if ($TextFileContentResult -eq '') { $TextFileContentResult = $cleanText }
-		(Get-Content $OutputFileHTML) | ForEach-Object { $_ -replace "%DeniedContent%", ($TextDeniedContent) } | Set-Content $OutputFileHTML
-		(Get-Content $OutputFileHTML) | ForEach-Object { $_ -replace "%FileNameResult%", ($TextFileNameResult) } | Set-Content $OutputFileHTML
-		(Get-Content $OutputFileHTML) | ForEach-Object { $_ -replace "%FileContentResult%", ($TextFileContentResult) } | Set-Content $OutputFileHTML
+		(Get-Content $OutputFileHTML) | ForEach-Object { $_ -replace "%DeniedContent%", ($TextDeniedContent) } | Set-Content -Encoding UTF8 $OutputFileHTML
+		(Get-Content $OutputFileHTML) | ForEach-Object { $_ -replace "%FileNameResult%", ($TextFileNameResult) } | Set-Content -Encoding UTF8 $OutputFileHTML
+		(Get-Content $OutputFileHTML) | ForEach-Object { $_ -replace "%FileContentResult%", ($TextFileContentResult) } | Set-Content -Encoding UTF8 $OutputFileHTML
 	}
 }
