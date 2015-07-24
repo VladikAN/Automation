@@ -4,9 +4,6 @@ function Check-Directory
 	param(
 		[Parameter(Mandatory=$true)]
 		[string]$TargetPath,
-		
-		[string]$DeniedContentPath = '.\denied content.conf',
-		[string]$ExcludeFilesPath = '.\exclude files.conf',
 
 		[Parameter(Mandatory=$true)]
 		[string]$TemplateFileHTML,
@@ -18,11 +15,14 @@ function Check-Directory
 	begin
 	{
 		Add-Type -AssemblyName System.Web
+		
+		# Load config file
+		. .\config.ps1
 
 		# preparing environment variables
 		$TargetPath = $TargetPath.ToLower()
-		[string[]]$Search_ContentRegex = Get-Content $DeniedContentPath
-		[string[]]$Search_ExcludeFiles = Get-Content $ExcludeFilesPath
+		[string[]]$Search_ContentRegex = $DeniedContent   #From config file
+		[string[]]$Search_ExcludeFiles = $ExcludeFiles    #From config file
 
 		$ResultObjectDefinition = @{ FileName = ''; LinesNumbers = @(); LinesContent = @(); LinesMatch = @(); }
 
