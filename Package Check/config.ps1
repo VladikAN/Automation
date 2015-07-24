@@ -1,3 +1,5 @@
+# https://github.com/VladikAN/Daily-Stuff/tree/master/Package Check
+
 # Files to ignore
 $ExcludeFiles = @(
     '\.eot$',

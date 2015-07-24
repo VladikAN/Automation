@@ -1,3 +1,5 @@
+# https://github.com/VladikAN/Daily-Stuff/tree/master/Package Check
+
 function Check-Directory
 {
 	[CmdletBinding()]
@@ -38,9 +40,7 @@ function Check-Directory
 			$key = $fullName.replace($TargetPath, '\');
 
 			$AllItemsFiles[$key] = $fullName
-			if (!$_.PSIsContainer -and $fullName -notmatch $Search_ExcludeFiles_Common) {
-				$ContentFiles[$key] = $fullName
-			}
+			if (!$_.PSIsContainer -and $fullName -notmatch $Search_ExcludeFiles_Common) { $ContentFiles[$key] = $fullName }
 		}
 
 		Write-Output "[info] $($AllItemsFiles.Count) files"
@@ -52,7 +52,7 @@ function Check-Directory
 		# Checking files names
 		$Result_FileNames = @{}
 		Write-Output "`r`n[info] File names check..."
-		$Express_FileNames = $AllItemsFiles.GetEnumerator() | Where-Object { $_.Key -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key
+		$Express_FileNames = $AllItemsFiles.GetEnumerator() | Where-Object { $_.Key -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key | Sort-Object
 		if ($Express_FileNames) {
 			ForEach ($token in $Search_ContentRegex) {
 				$Express_FileNames | Where-Object { $_ -match $token } | ForEach-Object {
@@ -66,7 +66,7 @@ function Check-Directory
 		# Checking files content
 		$Result_FileContent = @{}
 		Write-Output "`r`n[info] File content check..."
-		$Express_FileContent = $ContentFiles.GetEnumerator() | Where-Object { (Get-Content -Path $_.Value) -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key
+		$Express_FileContent = $ContentFiles.GetEnumerator() | Where-Object { (Get-Content -Path $_.Value) -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key | Sort-Object
 		if ($Express_FileContent) {
 			ForEach ($token in $Search_ContentRegex) {
 				$Express_FileContent | ForEach-Object {
@@ -146,7 +146,6 @@ function Check-Directory
 		}
 
 		[string]$cleanText = "`r`n<b>No results to display</b>"
-
 		if ($TextDeniedContent -eq '') { $TextDeniedContent = 'None' }
 		if ($TextFileNameResult -eq '') { $TextFileNameResult = $cleanText }
 		if ($TextFileContentResult -eq '') { $TextFileContentResult = $cleanText }
