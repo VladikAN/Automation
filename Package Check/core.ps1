@@ -66,7 +66,7 @@ function Check-Directory
 		# Checking files content
 		$Result_FileContent = @{}
 		Write-Output "`r`n[info] File content check..."
-		$Express_FileContent = $ContentFiles.GetEnumerator() | Where-Object { (Get-Content -Path $_.Value) -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key | Sort-Object
+		$Express_FileContent = $ContentFiles.GetEnumerator() | Where-Object { (Get-Content -Encoding UTF8 -Path $_.Value) -match $Search_ContentRegex_Common } | Select -uniq -ExpandProperty Key | Sort-Object
 		if ($Express_FileContent) {
 			ForEach ($token in $Search_ContentRegex) {
 				$Express_FileContent | ForEach-Object {
