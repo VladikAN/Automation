@@ -1,11 +1,11 @@
 ## Description
-Sometimes I need to prepare software package (ex. source files) and this package must be clear from any relation to me or my team. This powershell script do magic and checks specified folder for some unexpected content. As result script will create HTML file with check summary.
+Sometimes I need to prepare software package (ex. source files, binaries and static content) and this package must be clear for any relation to me or team or company. This powershell script do magic and check specified folder for all unexpected content. As result script will create HTML file with check summary.
 
 
 ### Parameters
-+ TargetPath - Target folder destination;
++ TargetPath - Destination folder;
 + TemplateFileHTML - Destination to HTML result template;
-+ OutputFileHTML - Output file destination.
++ OutputFileHTML - Output file.
 
 
 ### Example
