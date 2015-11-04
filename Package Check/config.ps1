@@ -4,6 +4,7 @@
 $ExcludeFiles = @(
     '\.eot$',
     '\.woff$',
+    '\.woff2$',
     '\.xpi$',
     '\.ttf$',
     '\.chm$',
@@ -20,4 +21,5 @@ $ExcludeFiles = @(
 $DeniedContent = @(
     '\.myconf',
     'invalid',
-    'companyname')
+    'companyname',
+    'MYCOMPANY')
