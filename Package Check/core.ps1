@@ -110,7 +110,7 @@ function Check-Directory
 				$value = $_.Value
 				
 				ForEach ($fileName in $value){
-					([regex]$key).Matches($filename) | Select -uniq | Foreach { $fileName = $fileName.replace($_, ("<mark>$_</mark>")) }
+					([regex]$key.ToLower()).Matches($filename) | Select -uniq | Foreach { $fileName = $fileName -ireplace $_, ("<mark>$_</mark>") }
 					$TextFileNameResult += ("`r`n<p>$fileName</p>")
 				}
 			}
