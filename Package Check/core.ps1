@@ -1,4 +1,4 @@
-# https://github.com/VladikAN/Daily-Stuff/tree/master/Package Check
+# https://github.com/VladikAN/Continuous-Integration/tree/master/Package Check
 
 function Check-Directory
 {
